@@ -1,0 +1,15 @@
+{
+  "contractName": "Vaulted",
+  "description": "OpenZeppelin base + custom logic",
+  "solidity": "^0.8.0",
+  "imports": [
+    "@openzeppelin/contracts/access/AccessControl.sol",
+    "@openzeppelin/contracts/security/ReentrancyGuard.sol",
+    "@openzeppelin/contracts/token/ERC20/IERC20.sol"
+  ],
+  "features": {
+    "roleBasedAccess": true,
+    "reentrancyProtection": true,
+    "escrowManagement": true
+  }
+}
