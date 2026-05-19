@@ -12,9 +12,9 @@ export const BASE_SEPOLIA_RPC = "https://sepolia.base.org";
 export const BASE_SEPOLIA_EXPLORER = "https://sepolia.basescan.org";
 
 // Environment-based Configuration
-export const CONTRACT_ADDRESS = process.env.VITE_CONTRACT_ADDRESS || "";
-export const MOCK_USD_ADDRESS = process.env.VITE_MOCK_USD_ADDRESS || "";
-export const UGF_ENDPOINT = process.env.VITE_UGF_ENDPOINT || "";
+export const CONTRACT_ADDRESS = import.meta.env.VITE_CONTRACT_ADDRESS || "";
+export const MOCK_USD_ADDRESS = import.meta.env.VITE_MOCK_USD_ADDRESS || "";
+export const UGF_ENDPOINT = import.meta.env.VITE_UGF_ENDPOINT || "";
 export const AUTO_RELEASE_DAYS = 7;
 
 // Job & Milestone Status
