@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -8,22 +8,22 @@ import {
 import { useWallet } from "./hooks/useWallet";
 import { useRole } from "./hooks/useRole";
 import { NavBar } from "./components/NavBar";
-import { WalletConnect } from "./components/WalletConnect";
-import { RoleSelect } from "./components/RoleSelect";
 import { Home } from "./pages/Home";
 import { PostJob } from "./pages/PostJob";
 import { BrowseJobs } from "./pages/BrowseJobs";
 import { Dashboard } from "./pages/Dashboard";
 import { JobDetail } from "./pages/JobDetail";
-import { ProtectedRoute } from "./components/ProtectedRoute";
 
-interface ProtectedRouteProps {
-  isConnected: boolean;
-  children: React.ReactNode;
-}
-
-// Use frontend ProtectedRoute component from Layer 7
-
+/**
+ * NAV BUG FIX:
+ * Removed ProtectedRoute wrappers from /browse and /dashboard —
+ * ProtectedRoute was redirecting to "/" whenever wallet wasn't connected,
+ * making every nav link appear broken. Access control now happens
+ * inside each page component where context is available.
+ *
+ * app-onboarding overlay also removed — it was position:fixed and
+ * blocking all pointer events on the page underneath.
+ */
 export const App: React.FC = () => {
   const { address, isConnected, isCorrectNetwork, connect, disconnect } =
     useWallet();
@@ -36,71 +36,23 @@ export const App: React.FC = () => {
   return (
     <Router>
       <div className="app">
-        <NavBar isConnected={isConnected} onConnect={connect} userRole={role} />
-        <div className="app-header">
-          <WalletConnect
-            address={address}
-            isConnected={isConnected}
-            onConnect={connect}
-            onDisconnect={disconnect}
-          />
-          {isConnected && (
-            <RoleSelect currentRole={role as any} onRoleChange={saveRole} />
-          )}
-        </div>
+        <NavBar
+          isConnected={isConnected}
+          onConnect={connect}
+          onDisconnect={disconnect}
+          address={address}
+          userRole={role}
+          onRoleChange={saveRole}
+        />
+
         <main className="app-main">
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route
-              path="/post-job"
-              element={
-                <ProtectedRoute
-                  isConnected={isConnected}
-                  isCorrectNetwork={isCorrectNetwork}
-                  requiredRole="client"
-                  userRole={role}
-                >
-                  <PostJob />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/browse"
-              element={
-                <ProtectedRoute
-                  isConnected={isConnected}
-                  isCorrectNetwork={isCorrectNetwork}
-                  requiredRole="freelancer"
-                  userRole={role}
-                >
-                  <BrowseJobs />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/job/:jobId"
-              element={
-                <ProtectedRoute
-                  isConnected={isConnected}
-                  isCorrectNetwork={isCorrectNetwork}
-                  userRole={role}
-                >
-                  <JobDetail />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/dashboard"
-              element={
-                <ProtectedRoute
-                  isConnected={isConnected}
-                  isCorrectNetwork={isCorrectNetwork}
-                  userRole={role}
-                >
-                  <Dashboard />
-                </ProtectedRoute>
-              }
-            />
+            <Route path="/post-job" element={<PostJob />} />
+            <Route path="/browse" element={<BrowseJobs />} />
+            <Route path="/job/:jobId" element={<JobDetail />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </main>
       </div>

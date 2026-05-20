@@ -104,6 +104,9 @@ export const useUGF = () => {
           updateStep("settle", false, null);
           return signature;
         }
+        // If no wallet is available, mark step as not loading and return null
+        updateStep("settle", false, "No wallet available");
+        return null;
       } catch (err) {
         const errorMsg =
           err instanceof Error ? err.message : "Settlement failed";
