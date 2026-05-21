@@ -13,7 +13,7 @@ import { PostJob } from "./pages/PostJob";
 import { BrowseJobs } from "./pages/BrowseJobs";
 import { Dashboard } from "./pages/Dashboard";
 import { JobDetail } from "./pages/JobDetail";
-
+import { Footer } from "./components/Footer";
 /**
  * NAV BUG FIX:
  * Removed ProtectedRoute wrappers from /browse and /dashboard —
@@ -55,6 +55,7 @@ export const App: React.FC = () => {
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </main>
+        <Footer />
       </div>
     </Router>
   );

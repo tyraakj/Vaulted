@@ -5,14 +5,11 @@ export const Home: React.FC = () => {
   const spineRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Animate spine on load
-    if (spineRef.current) {
-      spineRef.current.style.transform = "scaleY(1)";
-    }
-    // Animate workflow steps in
+    if (spineRef.current) spineRef.current.style.transform = "scaleY(1)";
     const steps = document.querySelectorAll<HTMLElement>(".wf-step");
     const nodes = document.querySelectorAll<HTMLElement>(".wf-node");
     const visuals = document.querySelectorAll<HTMLElement>(".wf-visual");
+    const fcards = document.querySelectorAll<HTMLElement>(".feature");
     steps.forEach((el, i) => {
       setTimeout(
         () => {
@@ -39,8 +36,6 @@ export const Home: React.FC = () => {
         350 + i * 150,
       );
     });
-    // Animate feature cards
-    const fcards = document.querySelectorAll<HTMLElement>(".feature");
     fcards.forEach((el, i) => {
       setTimeout(
         () => {
@@ -56,14 +51,13 @@ export const Home: React.FC = () => {
     <div className="home">
       {/* ── HERO ── */}
       <div className="hero">
-        {/* Floating background cards */}
         <div className="hero-float-cards">
           <div className="hfc hfc-1">
             <div className="hfc-label">ESCROW_LOCKED</div>
-            <div className="hfc-val">+15,000 USDC</div>
+            <div className="hfc-val gld">+15,000 USDC</div>
             <div className="hfc-addr">0x3A...9F2 → Contract</div>
             <div className="hfc-bar">
-              <div className="hfc-bar-fill" style={{ width: "100%" }}></div>
+              <div className="hfc-bar-fill gld" style={{ width: "100%" }}></div>
             </div>
             <div className="hfc-badges">
               <span className="hfc-badge em">CONFIRMED</span>
@@ -135,7 +129,7 @@ export const Home: React.FC = () => {
       </h2>
       <p className="sec-sub">
         Every layer of Vaulted is engineered for one purpose — a payment
-        infrastructure that traditional platforms can't match.
+        infrastructure that traditional platforms simply can't match.
       </p>
 
       <div className="features">
@@ -221,7 +215,6 @@ export const Home: React.FC = () => {
         </div>
       </div>
 
-      {/* ── DIVIDER ── */}
       <div className="section-divider"></div>
 
       {/* ── WORKFLOW ── */}
@@ -230,8 +223,8 @@ export const Home: React.FC = () => {
         How It <span className="em">Works</span>
       </h2>
       <p className="sec-sub">
-        From posting a contract to getting paid — every step is trustless,
-        transparent, and settled on-chain.
+        From posting a contract to getting paid — every step is transparent and
+        settled on-chain.
       </p>
 
       <div className="workflow">
@@ -244,9 +237,9 @@ export const Home: React.FC = () => {
                 <span className="wf-tag wt-em">Deploy</span>
                 <h3>Client Posts a Contract</h3>
                 <p>
-                  The client defines scope, milestones, and escrow budget in
-                  Mock USD. A single UGF transaction deploys the smart contract
-                  and locks funds — no ETH required, no intermediary approval.
+                  The client defines scope, milestones, and budget in Mock USD.
+                  A single transaction deploys the smart contract and locks
+                  funds — no ETH needed, no intermediary approval.
                 </p>
                 <div className="wf-chip">
                   <div className="dot dot-em"></div>Contract deployed on Base
@@ -278,13 +271,13 @@ export const Home: React.FC = () => {
                 <span className="wf-tag wt-gld">Discover</span>
                 <h3>Freelancer Accepts the Job</h3>
                 <p>
-                  Verified freelancers browse the open job feed and accept
-                  directly on-chain via UGF. No emails, no platforms taking a
-                  cut — the smart contract records the match immutably.
+                  Freelancers browse the open job feed and accept directly
+                  on-chain. No emails, no platform taking a cut — the smart
+                  contract records the match immutably.
                 </p>
                 <div className="wf-chip">
                   <div className="dot dot-gld"></div>Acceptance stored on-chain
-                  · gas abstracted by UGF
+                  · gas covered automatically
                 </div>
               </div>
               <div className="wf-visual">
@@ -311,9 +304,9 @@ export const Home: React.FC = () => {
                 <span className="wf-tag wt-em">Execute</span>
                 <h3>Work Submitted, Milestones Unlock</h3>
                 <p>
-                  Freelancer submits work and marks milestones complete. Each
-                  submission is a UGF transaction — no ETH, just a signature.
-                  The contract tracks progress on-chain in real time.
+                  The freelancer submits work and marks milestones complete.
+                  Each submission is a single signature — no ETH, no friction.
+                  Progress is tracked on-chain in real time.
                 </p>
                 <div className="wf-chip">
                   <div className="dot dot-em"></div>3 of 5 milestones cleared ·
@@ -343,11 +336,11 @@ export const Home: React.FC = () => {
             <div className="wf-step-inner">
               <div className="wf-content">
                 <span className="wf-tag wt-gld">Settle</span>
-                <h3>Client Approves, Escrow Released</h3>
+                <h3>Approved. Payment Released.</h3>
                 <p>
-                  On final approval — or when the 7-day auto-release timer fires
-                  — the remaining escrow transfers to the freelancer's wallet in
-                  the same block. No waiting, no withdrawal requests.
+                  On final approval — or when the 7-day auto-release fires — the
+                  remaining escrow transfers instantly to the freelancer's
+                  wallet. No waiting, no withdrawal requests.
                 </p>
                 <div className="wf-chip">
                   <div className="dot dot-gld"></div>Settlement confirmed ·
@@ -374,7 +367,26 @@ export const Home: React.FC = () => {
         </div>
       </div>
 
-      <div style={{ height: "60px" }}></div>
+      <div className="section-divider"></div>
+
+      {/* ── CTA ── */}
+      <div className="cta-section">
+        <h2>
+          Ready to Get <span className="highlight">Paid?</span>
+        </h2>
+        <p>
+          Join the freelancers and clients already using Vaulted. No account
+          needed — just connect your wallet and go.
+        </p>
+        <div className="cta-buttons-wrap">
+          <Link to="/browse" className="btn btn-primary">
+            Find Work
+          </Link>
+          <Link to="/post-job" className="btn btn-secondary">
+            Hire a Freelancer
+          </Link>
+        </div>
+      </div>
     </div>
   );
 };
