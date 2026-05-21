@@ -1,127 +1,247 @@
-# Vaulted
+# ◈ VAULTED
 
-**Vaulted** is a secure, blockchain-based freelance marketplace built with React, Vite, and Ethereum tooling. It uses escrow-style payment management to protect clients and freelancers while staying non-custodial and gas-efficient on Base Sepolia.
+> **Post. Work. Get Paid. No Middlemen.**
 
-## Key Features
+Vaulted is a gasless freelance escrow platform built on Base Sepolia. Payment is locked on-chain the moment a job is posted, released only on approval, and neither party ever needs ETH — UGF handles all gas fees automatically.
 
-- Wallet-based onboarding with Ethereum-compatible wallet connection
-- Job posting and browsing for clients and freelancers
-- Smart-contract-backed escrow payments with milestone tracking
-- On-chain job lifecycle states: Open, Active, Complete, Released, Disputed
-- Zero-fee gas experience for users via relayer support (meta-transactions)
+Built for the **UGF Hackathon** · Deployed on **Base Sepolia Testnet**
+
+---
+
+## The Problem
+
+- Freelancers get ghosted after delivering work
+- Clients pay for work that never arrives
+- Platforms like Fiverr and Upwork take 20% cuts and can freeze accounts
+- Existing blockchain solutions require ETH, making them inaccessible to most people
+
+## The Solution
+
+Vaulted removes every middleman from the equation:
+
+- Payment is **locked on-chain** the moment a job is posted
+- Released **automatically** when work is approved
+- Neither party ever needs ETH — UGF handles all gas fees
+- No platform can freeze your account — the contract is the authority
+
+---
 
 ## Tech Stack
 
-- React 18
-- TypeScript
-- Vite
-- Ethers.js
-- React Router DOM
-- Tailwind CSS
+| Layer          | Technology                            |
+| -------------- | ------------------------------------- |
+| Frontend       | React + TypeScript + Vite             |
+| Styling        | Plain CSS (custom design system)      |
+| Wallet         | ethers.js + MetaMask                  |
+| Gasless Layer  | UGF SDK (`@tychilabs/ugf-testnet-js`) |
+| Smart Contract | Solidity + OpenZeppelin               |
+| Network        | Base Sepolia Testnet                  |
+| Payment Token  | Mock USD (`TYI_MOCK_USD`)             |
+| Deployment     | Remix IDE                             |
+
+---
 
 ## Getting Started
 
-### Install dependencies
+### Prerequisites
+
+- Node.js 18+
+- MetaMask browser extension
+- Base Sepolia network added to MetaMask
+
+### Installation
 
 ```bash
+git clone https://github.com/your-username/vaulted.git
+cd vaulted
 npm install
 ```
 
-### Run locally
+### Environment Setup
+
+Create a `.env` file in the project root:
+
+```env
+VITE_CONTRACT_ADDRESS=       # Deployed Escrow.sol address
+VITE_CHAIN_ID=84532          # Base Sepolia
+VITE_MOCK_USD_ADDRESS=       # From UGF testnet docs
+VITE_UGF_ENDPOINT=           # From UGF testnet docs
+```
+
+### Run
 
 ```bash
 npm run dev
 ```
 
-Then open the local development URL shown by Vite.
+Open [http://localhost:3000](http://localhost:3000)
 
-### Build for production
+---
 
-```bash
-npm run build
+## Project Structure
+
+```
+vaulted/
+├── contracts/
+│   └── Escrow.sol              # OpenZeppelin base + custom logic
+│
+├── src/
+│   ├── pages/
+│   │   ├── Home.tsx
+│   │   ├── PostJob.tsx
+│   │   ├── BrowseJobs.tsx
+│   │   ├── Dashboard.tsx
+│   │   └── JobDetail.tsx
+│   │
+│   ├── components/
+│   │   ├── Navbar.tsx
+│   │   ├── Footer.tsx
+│   │   ├── WalletConnect.tsx
+│   │   ├── RoleSelect.tsx
+│   │   ├── JobCard.tsx
+│   │   ├── MilestoneTracker.tsx
+│   │   ├── PaymentFlow.tsx
+│   │   ├── ProtectedRoute.tsx
+│   │   └── StatusBadge.tsx
+│   │
+│   ├── hooks/
+│   │   ├── useWallet.ts        # Wallet connection + network check
+│   │   ├── useRole.ts          # Client / Freelancer role state
+│   │   ├── useUGF.ts           # Gasless transaction flow
+│   │   └── useContract.ts      # Read + encode contract calls
+│   │
+│   ├── lib/
+│   │   ├── ugf.ts              # UGFClient singleton
+│   │   ├── contract.ts         # Contract instance + ABI
+│   │   └── constants.ts        # Chain ID, addresses, config
+│   │
+│   ├── types/
+│   │   └── index.ts            # Shared TypeScript types
+│   │
+│   ├── App.tsx                 # Router + ProtectedRoute
+│   ├── main.tsx                # Entry point
+│   └── index.css               # Global styles
+│
+├── public/
+│   └── vaulted-logo.svg
+│
+├── .env
+├── vite.config.ts
+├── tsconfig.json
+└── package.json
 ```
 
-### Typecheck and lint
+---
 
-```bash
-npm run type-check
-npm run lint
+## How It Works
+
+### The UGF Gasless Flow
+
+Every on-chain action in Vaulted runs through this exact 4-step sequence — no exceptions:
+
+| Step        | What Happens                                                                                                  |
+| ----------- | ------------------------------------------------------------------------------------------------------------- |
+| `login()`   | UGF authenticates the wallet. Required once per session.                                                      |
+| `quote()`   | UGF estimates gas cost in Mock USD. Shown to user before any action.                                          |
+| `settle()`  | User signs an ERC-3009 authorization. No blockchain transaction yet — just a signature.                       |
+| `execute()` | UGF submits the transaction, pays ETH gas from its own reserves, deducts Mock USD from user. Returns tx hash. |
+
+### The "Read with Ethers, Write with UGF" Rule
+
+`useContract.ts` **never** submits transactions directly — doing so would trigger MetaMask to demand native ETH gas.
+
+- **Read functions** (safe to call via Ethers): `getJob()`
+- **Encode functions** (return calldata only): `encodeCreateJob()`, `encodeAcceptJob()`, `encodeSubmitMilestone()`, `encodeReleasePayment()`, `encodeDisputeJob()`
+- **Execution**: always handed off to `useUGF.ts` → `execute()`
+
+### User Flows
+
+**Client Posts a Job**
+
+1. Connect wallet → Select Client role
+2. PostJob page → Fill title, description, payment amount
+3. UGF flow runs → Mock USD locked in smart contract
+4. Job appears on BrowseJobs for freelancers
+
+**Freelancer Accepts and Completes**
+
+1. Connect wallet → Select Freelancer role
+2. BrowseJobs → Pick a job → Accept
+3. UGF flow runs → Job status becomes Active
+4. Do the work → JobDetail → Mark Complete
+
+**Client Releases Payment**
+
+1. Dashboard → See completed job → Approve & Release
+2. UGF flow runs → Mock USD sent to freelancer
+3. Freelancer receives ~498.8 USD (1.2 USD deducted for gas automatically)
+
+---
+
+## Smart Contract
+
+Deployed on Base Sepolia via Remix IDE.
+
+### Key Functions
+
+| Function            | Access                   | Description                                  |
+| ------------------- | ------------------------ | -------------------------------------------- |
+| `createJob()`       | Any wallet               | Locks Mock USD in escrow, emits `JobCreated` |
+| `acceptJob()`       | Any wallet except client | Sets freelancer, status → Active             |
+| `submitMilestone()` | Freelancer only          | Marks work complete, status → Complete       |
+| `releasePayment()`  | Client only              | Sends Mock USD to freelancer                 |
+| `disputeJob()`      | Client or Freelancer     | Status → Disputed                            |
+| `autoRelease()`     | Anyone after 7 days      | Auto-releases if client is unresponsive      |
+
+### Job Status Flow
+
+```
+Open → Active → Complete → Released
+                    ↓
+                Disputed
 ```
 
-## Environment Variables
+---
 
-Vaulted loads configuration from Vite environment variables. Create a `.env` file in the project root with the following values:
+## Security
 
-```env
-VITE_CONTRACT_ADDRESS=0x...
-VITE_MOCK_USD_ADDRESS=0x...
-VITE_UGF_ENDPOINT=https://...
-```
+### Frontend
 
-- `VITE_CONTRACT_ADDRESS` � deployed escrow contract address
-- `VITE_MOCK_USD_ADDRESS` � mock USD token address used for payments
-- `VITE_UGF_ENDPOINT` � relayer or UGF service endpoint
+- `ProtectedRoute` redirects unauthenticated users to home
+- Clients redirected away from `/browse`, freelancers from `/post-job`
+- Wrong network blocked at wallet level
 
-## App Structure
+### Smart Contract
 
-- `src/App.tsx` � routing and top-level layout
-- `src/pages/` � page views: `Home`, `BrowseJobs`, `PostJob`, `JobDetail`, `Dashboard`
-- `src/components/` � UI components like `NavBar`, `Footer`, `WalletConnect`, `StatusBadge`
-- `src/hooks/` � custom hooks for wallet, contract, role, and UGC/UGF logic
-- `src/lib/` � shared constants and contract helpers
+- All write functions enforce caller identity on-chain
+- `autoRelease()` only callable after `autoReleaseAt` timestamp
+- Built on audited OpenZeppelin `Escrow.sol` base
 
-## 10-Layer Architecture
+---
 
-Vaulted is designed as a layered application where each layer has a focused responsibility. This helps separate UI, blockchain logic, configuration, security, and transaction orchestration.
+## What Makes Vaulted Stand Out
 
-1. **Presentation Layer**
-   - React pages and components render the user interface and user experience.
-   - Includes `src/pages/`, `src/components/`, and styling.
+- ✅ Payment locked before work starts — no ghosting possible
+- ✅ Release only on approval — no paying for incomplete work
+- ✅ 7-day auto-release — client cannot hold payment hostage
+- ✅ Zero ETH required — works for anyone, anywhere
+- ✅ No platform account — connect wallet and go
+- ✅ UGF deducts gas from incoming USD — freelancer needs literally 0 ETH
 
-2. **Routing Layer**
-   - Application navigation and route composition are handled by `react-router-dom` in `src/App.tsx`.
-   - Routes control which page is displayed for each URL.
+---
 
-3. **Logic Layer**
-   - Business logic for blockchain interactions lives in `src/hooks/useContract.ts`.
-   - This layer reads contract state and encodes transactions without executing them directly.
+## Team
 
-4. **Configuration Layer**
-   - `src/lib/constants.ts`, `src/lib/contract.ts`, and `src/lib/ugf.ts` centralize environment variables, RPC endpoints, contract addresses, and client setup.
-   - It keeps deployment-specific values separate from application logic.
+| Role      | Owns                              |
+| --------- | --------------------------------- |
+| Tech Lead | Hooks, lib setup, UGF integration |
+| Dev 2     | All pages                         |
+| Dev 3     | Escrow.sol deployment             |
+| Dev 4     | All components + UI               |
+| Dev 5     | Pitch deck, demo, branding        |
 
-5. **Type Layer**
-   - `src/types/index.ts` defines domain types such as `Job`, `Role`, `JobStatus`, and `UGFTransaction`.
-   - This layer ensures consistent data shape across components and hooks.
-
-6. **State & Data Layer**
-   - Custom hooks like `useWallet`, `useRole`, `useUGC`, and `useUGF` manage UI state, wallet state, roles, and data flows.
-   - It bridges the presentation layer to contract and network interactions.
-
-7. **Security Layer**
-   - `src/components/ProtectedRoute.tsx` protects routes based on wallet connection, network validity, and user role.
-   - This layer enforces access control and network guardrails.
-
-8. **UGF Transaction Layer**
-   - `src/hooks/useUGF.ts` implements the UGF flow: login, quote, settle, and execute.
-   - All write operations are routed through this meta-transaction orchestration flow.
-
-9. **Integration Layer**
-   - Ethereum integration uses `ethers.js` and `src/lib/contract.ts` to read on-chain data.
-   - External API integration uses `UGF_ENDPOINT` and fetch operations for relayer interactions.
-
-10. **Infrastructure Layer**
-
-- Build and deployment configuration, including Vite, TypeScript, and environment variable management.
-- This layer also includes the Base Sepolia chain target and networking assumptions.
-
-> Note: layer labels such as `LAYER 3 - LOGIC LAYER`, `LAYER 4 - CONFIGURATION LAYER`, `LAYER 5 - TYPE LAYER`, `LAYER 7 - SECURITY LAYER`, and `LAYER 8 - UGF TRANSACTION LAYER` are present in code comments and reflect the app’s internal organization.
-
-## Notes
-
-- The app targets Base Sepolia as its chain environment
-- Wallet connection and contract interactions require a compatible web3 wallet
+---
 
 ## License
 
-This repository does not currently specify a license.
+MIT — Built for the UGF Hackathon on Base Sepolia.
