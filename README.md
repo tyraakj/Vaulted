@@ -64,8 +64,8 @@ Create a `.env` file in the project root:
 ```env
 VITE_CONTRACT_ADDRESS=       # Deployed Escrow.sol address
 VITE_CHAIN_ID=84532          # Base Sepolia
-VITE_MOCK_USD_ADDRESS=       # From UGF testnet docs
-VITE_UGF_ENDPOINT=           # From UGF testnet docs
+VITE_MOCK_USD_ADDRESS=0x27DC1C167AeF232bb1e21073304B526726a8727e  # TYI_MOCK_USD (Base Sepolia)
+VITE_UGF_ENDPOINT=https://gateway.universalgasframework.com
 ```
 
 ### Run
