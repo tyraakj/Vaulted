@@ -148,7 +148,7 @@ export const Home: React.FC = () => {
           <div className="feature-icon gold">🔒</div>
           <div className="feature-stat gold">100%</div>
           <div className="feature-stat-label">Non-Custodial</div>
-          <h3>Trustless by Design</h3>
+          <h3>Payment that keeps its promise.</h3>
           <p>
             Funds never touch our servers. Smart contracts hold escrow
             autonomously — no platform approval required.
