@@ -9,7 +9,7 @@ export const Terms: React.FC = () => {
           Terms of <span className="em">Service</span>
         </h1>
         <p className="legal-meta">
-          Last updated: May 2025 · Effective immediately
+          Last updated: May 2026 · Effective immediately
         </p>
       </div>
 
