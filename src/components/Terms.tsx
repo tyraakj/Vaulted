@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import { BASE_SEPOLIA_CHAIN_ID } from "../lib/constants";
 
 export const Terms: React.FC = () => {
   useEffect(() => {
@@ -65,7 +66,7 @@ export const Terms: React.FC = () => {
             <li>Securing your wallet and private keys</li>
             <li>
               Ensuring you are connected to the correct network (Base, Chain ID
-              8453)
+              {BASE_SEPOLIA_CHAIN_ID})
             </li>
             <li>
               Verifying all job details, amounts, and counterparty addresses

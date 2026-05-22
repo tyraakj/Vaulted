@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
+import { CONTRACT_ADDRESS, MOCK_USD_ADDRESS } from "../lib/constants";
 
 export const Home: React.FC = () => {
   const spineRef = useRef<HTMLDivElement>(null);
@@ -55,7 +56,7 @@ export const Home: React.FC = () => {
           <div className="hfc hfc-1">
             <div className="hfc-label">ESCROW_LOCKED</div>
             <div className="hfc-val gld">+15,000 USDC</div>
-            <div className="hfc-addr">0x3A...9F2 → Contract</div>
+            <div className="hfc-addr">{CONTRACT_ADDRESS ? `${CONTRACT_ADDRESS.slice(0,6)}...${CONTRACT_ADDRESS.slice(-4)}` : "Contract"} → Contract</div>
             <div className="hfc-bar">
               <div className="hfc-bar-fill gld" style={{ width: "100%" }}></div>
             </div>
@@ -67,7 +68,7 @@ export const Home: React.FC = () => {
           <div className="hfc hfc-2">
             <div className="hfc-label">SETTLEMENT_EXEC</div>
             <div className="hfc-val gld">+6,000 USDC</div>
-            <div className="hfc-addr">→ 0x7F...4A2</div>
+            <div className="hfc-addr">→ {MOCK_USD_ADDRESS ? `${MOCK_USD_ADDRESS.slice(0,6)}...${MOCK_USD_ADDRESS.slice(-4)}` : "Token"}</div>
             <div className="hfc-bar">
               <div className="hfc-bar-fill gld" style={{ width: "100%" }}></div>
             </div>
@@ -249,7 +250,7 @@ export const Home: React.FC = () => {
               <div className="wf-visual">
                 <div className="wf-visual-label">ESCROW LOCKED</div>
                 <div className="wf-visual-val gld">15,000 USDC</div>
-                <div className="wf-addr">0x3A...9F2 → Contract</div>
+                  <div className="wf-addr">{CONTRACT_ADDRESS ? `${CONTRACT_ADDRESS.slice(0,6)}...${CONTRACT_ADDRESS.slice(-4)}` : "Contract"} → Contract</div>
                 <div className="wf-bar">
                   <div
                     className="wf-bar-fill wfb-gld"
@@ -350,7 +351,7 @@ export const Home: React.FC = () => {
               <div className="wf-visual">
                 <div className="wf-visual-label">SETTLEMENT_EXEC</div>
                 <div className="wf-visual-val gld">+6,000 USDC</div>
-                <div className="wf-addr">→ 0x7F...4A2</div>
+                <div className="wf-addr">→ {MOCK_USD_ADDRESS ? `${MOCK_USD_ADDRESS.slice(0,6)}...${MOCK_USD_ADDRESS.slice(-4)}` : "Token"}</div>
                 <div className="wf-bar">
                   <div
                     className="wf-bar-fill wfb-gld"

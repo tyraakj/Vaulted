@@ -12,6 +12,15 @@ export const useRole = () => {
     return null;
   });
 
+  const initializeRole = useCallback(() => {
+    if (typeof window !== "undefined") {
+      const savedRole = localStorage.getItem("userRole");
+      if (savedRole === "client" || savedRole === "freelancer") {
+        setRole(savedRole as Role);
+      }
+    }
+  }, []);
+
   const saveRole = useCallback((newRole: Role) => {
     setRole(newRole);
     if (newRole) {
@@ -30,6 +39,6 @@ export const useRole = () => {
     role,
     saveRole,
     clearRole,
-  };
+    initializeRole,
   };
 };

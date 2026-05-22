@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import { BASE_SEPOLIA_CHAIN_ID } from "../lib/constants";
 
 export const Contact: React.FC = () => {
   useEffect(() => {
@@ -100,7 +101,7 @@ export const Contact: React.FC = () => {
             <div className="faq-item">
               <h4>Why does it say "Wrong Network"?</h4>
               <p>
-                Vaulted runs securely on Base (Chain ID: 8453). Open MetaMask,
+                Vaulted runs securely on Base (Chain ID: {BASE_SEPOLIA_CHAIN_ID}). Open MetaMask,
                 switch to the Base network, and refresh the page. All features
                 will be available once you're on the correct network.
               </p>

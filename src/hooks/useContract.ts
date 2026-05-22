@@ -62,10 +62,22 @@ export const useContract = () => {
         throw new Error("Contract not initialized");
       }
 
-      const jobData = await contract.getJob(BigInt(jobId));
-      if (!jobData || jobData[0].toString() === "0") {
+      // Prefer high-level getter if available, otherwise fall back to public mapping `jobs`
+      const anyContract = contract as any;
+      let jobData: any;
+
+      if (typeof anyContract.getJob === "function") {
+        jobData = await anyContract.getJob(BigInt(jobId));
+      } else if (typeof anyContract.jobs === "function") {
+        jobData = await anyContract.jobs(BigInt(jobId));
+      } else {
+        throw new Error("Contract does not expose getJob or jobs");
+      }
+
+      if (!jobData || (jobData[0] && jobData[0].toString && jobData[0].toString() === "0")) {
         return null;
       }
+
       return mapContractJobToJob(jobData);
     } catch (err) {
       const errorMsg =
@@ -87,11 +99,34 @@ export const useContract = () => {
         throw new Error("Contract not initialized");
       }
 
-      const jobsData = await contract.getAllJobs();
-      if (!jobsData) {
-        return [];
+      const anyContract = contract as any;
+
+      // If contract provides getAllJobs, use it
+      if (typeof anyContract.getAllJobs === "function") {
+        const jobsData = await anyContract.getAllJobs();
+        if (!jobsData) return [];
+        return jobsData.map((job: any) => mapContractJobToJob(job));
       }
-      return jobsData.map((job: any) => mapContractJobToJob(job));
+
+      // Otherwise, fall back to reading via public mapping `jobs` and `jobCount()`
+      if (typeof anyContract.jobCount === "function" && typeof anyContract.jobs === "function") {
+        const countRaw = await anyContract.jobCount();
+        const count = Number(countRaw);
+        const results: Job[] = [];
+        for (let i = 1; i <= count; i++) {
+          try {
+            const jobData = await anyContract.jobs(BigInt(i));
+            if (jobData && jobData[0] && jobData[0].toString && jobData[0].toString() !== "0") {
+              results.push(mapContractJobToJob(jobData));
+            }
+          } catch (e) {
+            // skip missing entries
+          }
+        }
+        return results;
+      }
+
+      throw new Error("Contract does not expose getAllJobs or jobCount/jobs");
     } catch (err) {
       const errorMsg =
         err instanceof Error ? err.message : "Failed to fetch jobs";
@@ -145,17 +180,31 @@ export const useContract = () => {
 
   // ENCODE: Submit milestone (returns calldata for UGF to execute)
   const encodeSubmitMilestone = useCallback(
-    (jobId: string, workDetails: string): string => {
+    (jobId: string, workDetails?: string): string => {
       try {
         const contract = getContract();
         if (!contract) {
           throw new Error("Contract not initialized");
         }
 
-        return contract.interface.encodeFunctionData("submitMilestone", [
-          BigInt(jobId),
-          workDetails,
-        ]);
+        // Encode against the available ABI signature. Some deployed contracts
+        // implement `submitMilestone(uint256 jobId, string workDetails)` while
+        // others may only accept `submitMilestone(uint256 jobId)`. Detect and
+        // encode accordingly to avoid guessing.
+        const iface = contract.interface as any;
+        try {
+          // Try full signature first
+          iface.getFunction("submitMilestone(uint256,string)");
+          return iface.encodeFunctionData("submitMilestone", [BigInt(jobId), workDetails || ""]);
+        } catch (e) {
+          // Fallback to single-arg signature
+          try {
+            iface.getFunction("submitMilestone(uint256)");
+            return iface.encodeFunctionData("submitMilestone", [BigInt(jobId)]);
+          } catch (e2) {
+            throw new Error("submitMilestone function not found in contract ABI");
+          }
+        }
       } catch (err) {
         const errorMsg = err instanceof Error ? err.message : "Encoding failed";
         setError(errorMsg);
