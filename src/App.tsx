@@ -14,9 +14,9 @@ import { BrowseJobs } from "./pages/BrowseJobs";
 import { Dashboard } from "./pages/Dashboard";
 import { JobDetail } from "./pages/JobDetail";
 import { Footer } from "./components/Footer";
-import { Terms } from "./pages/Terms";
-import { Privacy } from "./pages/Privacy";
-import { Contact } from "./pages/Contact";
+import { Terms } from "./components/Terms";
+import { Privacy } from "./components/Privacy";
+import { Contact } from "./components/Contact";
 /**
  * NAV BUG FIX:
  * Removed ProtectedRoute wrappers from /browse and /dashboard —

@@ -1237,27 +1237,68 @@ select option {
 }
 
 /* ─── RESPONSIVE ─── */
+/* ─── RESPONSIVE — 1024px (tablet landscape) ─── */
+@media (max-width: 1024px) {
+  .app-main {
+    padding: 40px 24px;
+  }
+  .navbar-container {
+    padding: 0 24px;
+  }
+  .app-header {
+    padding: 8px 24px;
+  }
+  .hero h1 {
+    font-size: clamp(44px, 7vw, 72px);
+  }
+  .features {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .footer-inner {
+    grid-template-columns: 1.2fr repeat(2, 1fr);
+    gap: 28px;
+  }
+  .wf-visual {
+    width: 180px;
+  }
+}
+
+/* ─── RESPONSIVE — 768px (tablet portrait) ─── */
 @media (max-width: 768px) {
   .app-main {
-    padding: 24px 16px;
+    padding: 28px 16px;
   }
   .navbar-container {
     padding: 0 16px;
   }
   .app-header {
     padding: 8px 16px;
+    flex-direction: column;
+    align-items: flex-start;
   }
   .hero {
-    padding: 64px 0 48px;
+    padding: 56px 0 40px;
+    min-height: 480px;
+  }
+  .hero h1 {
+    font-size: clamp(36px, 8vw, 56px);
+  }
+  .hero p {
+    font-size: 14px;
   }
   .features {
     grid-template-columns: 1fr;
+    gap: 10px;
   }
   .features-wide {
     grid-template-columns: 1fr;
   }
   .stats-grid {
     grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
   }
   .job-content {
     grid-template-columns: 1fr;
@@ -1267,6 +1308,154 @@ select option {
   }
   .nav-links {
     padding: 6px 10px;
+    font-size: 10px;
+  }
+  .nav-menu {
+    gap: 0;
+  }
+  .cta-section {
+    padding: 48px 24px;
+    border-radius: 12px;
+  }
+  .cta-section h2 {
+    font-size: clamp(1.6rem, 6vw, 2.4rem);
+  }
+  .footer-inner {
+    grid-template-columns: 1fr 1fr;
+    gap: 28px;
+  }
+  .footer-brand {
+    grid-column: 1 / -1;
+  }
+  .legal-page {
+    padding-bottom: 48px;
+  }
+  .contact-grid {
+    grid-template-columns: 1fr;
+  }
+  .sec-title {
+    font-size: clamp(1.6rem, 5vw, 2.2rem);
+  }
+  .post-job h1,
+  .browse-jobs h1,
+  .dashboard h1,
+  .job-header h1 {
+    font-size: 28px;
+  }
+}
+
+/* ─── RESPONSIVE — 480px (mobile) ─── */
+@media (max-width: 480px) {
+  .app-main {
+    padding: 20px 14px;
+  }
+  .navbar-container {
+    padding: 0 14px;
+    height: 48px;
+  }
+  .navbar-logo {
+    font-size: 15px;
+  }
+  .hero {
+    padding: 40px 0 32px;
+    min-height: 420px;
+  }
+  .hero h1 {
+    font-size: clamp(30px, 9vw, 44px);
+  }
+  .hero p {
+    font-size: 13px;
+    padding: 0 8px;
+  }
+  .cta-buttons {
+    flex-direction: column;
+    align-items: center;
+  }
+  .cta-buttons .btn {
+    width: 100%;
+    max-width: 280px;
+    justify-content: center;
+  }
+  .hero-tag {
+    font-size: 9px;
+    padding: 3px 10px;
+  }
+  .features {
+    gap: 8px;
+  }
+  .feature {
+    padding: 20px 18px;
+  }
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+  .stat-card {
+    padding: 16px;
+  }
+  .stat-value {
+    font-size: 22px;
+  }
+  .nav-links {
+    display: none;
+  }
+  .nav-links-mobile {
+    font-size: 10px;
+    padding: 5px 10px;
+  }
+  .footer-inner {
+    grid-template-columns: 1fr;
+  }
+  .footer-col {
+    border-top: 1px solid var(--b1);
+    padding-top: 20px;
+  }
+  .footer-bottom {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .wf-steps {
+    padding-left: 40px;
+  }
+  .wf-step {
+    padding: 20px 0 20px 0;
+  }
+  .wf-step h3 {
+    font-size: 1rem;
+  }
+  .wf-step p {
+    font-size: 0.82rem;
+  }
+  .wf-chip {
+    font-size: 0.62rem;
+  }
+  .cta-section {
+    padding: 36px 16px;
+    margin: 40px 0;
+  }
+  .cta-buttons-wrap {
+    flex-direction: column;
+    align-items: center;
+  }
+  .cta-buttons-wrap .btn {
+    width: 100%;
+    max-width: 280px;
+  }
+  .job-form {
+    padding: 22px 18px;
+  }
+  .legal-section h2 {
+    font-size: 1rem;
+  }
+  .contact-card {
+    padding: 18px;
+  }
+  .sec-label {
+    font-size: 0.62rem;
+  }
+  .sec-sub {
+    font-size: 0.85rem;
   }
 }
 
@@ -1688,6 +1877,14 @@ select option {
     padding-left: 48px;
   }
 }
+@media (max-width: 480px) {
+  .hfc-1,
+  .hfc-2,
+  .hfc-3,
+  .hfc-4 {
+    display: none;
+  }
+}
 
 /* ─── CTA SECTION ─── */
 .cta-section {
@@ -1894,18 +2091,6 @@ select option {
   animation: epulse 2s ease-in-out infinite;
 }
 
-@media (max-width: 768px) {
-  .footer-inner {
-    grid-template-columns: 1fr 1fr;
-  }
-  .footer-brand {
-    grid-column: 1 / -1;
-  }
-  .cta-section {
-    padding: 48px 24px;
-  }
-}
-
 /* ─── LEGAL / CONTACT PAGES ─── */
 .legal-page {
   max-width: 720px;
@@ -2083,10 +2268,4 @@ select option {
   font-size: 0.88rem;
   color: var(--t2);
   line-height: 1.75;
-}
-
-@media (max-width: 768px) {
-  .contact-grid {
-    grid-template-columns: 1fr;
-  }
 }

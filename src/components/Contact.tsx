@@ -31,7 +31,7 @@ export const Contact: React.FC = () => {
             <a
               href="https://sepolia.basescan.org"
               target="_blank"
-              rel="noreferrer"
+              rel="noopener noreferrer"
               className="contact-link"
             >
               Open Basescan →
