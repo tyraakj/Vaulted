@@ -1,13 +1,6 @@
 import { useState, useCallback } from "react";
-import type { UGFStep } from "../types";
+import type { UGFStep, UGFFlowState } from "../types";
 import { UGF_ENDPOINT } from "../lib/constants";
-
-interface UGFFlowState {
-  step: UGFStep;
-  isLoading: boolean;
-  error: string | null;
-  txHash: string | null;
-}
 
 interface UGFQuoteResponse {
   gasEstimate: string;
@@ -169,24 +162,18 @@ export const useUGF = () => {
       }
 
       // Step 2: Quote
-      // Transition step to quote with loading state
-      updateStep("quote", true);
       const quoteRes = await quote(address, calldata);
       if (!quoteRes.success || !quoteRes.data) {
         return { success: false, error: quoteRes.error || "Quote failed" };
       }
 
       // Step 3: Settle
-      // Transition step to settle with loading state
-      updateStep("settle", true);
       const settleRes = await settle(address, quoteRes.data.mockUsdCost);
       if (!settleRes.success || !settleRes.signature) {
         return { success: false, error: settleRes.error || "Settlement failed" };
       }
 
       // Step 4: Execute
-      // Transition step to execute with loading state
-      updateStep("execute", true);
       const executeRes = await execute(
         address,
         calldata,

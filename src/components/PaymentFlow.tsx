@@ -1,10 +1,10 @@
 import React, { useState } from "react";
-import type { UGFStep, UGFTransaction } from "../types";
+import type { UGFStep, UGFFlowState } from "../types";
 
 interface PaymentFlowProps {
   contractId: string;
   totalAmount: number;
-  flowState?: UGFTransaction;
+  flowState?: UGFFlowState;
   onInitiate?: () => void;
   onPaymentInitiate?: (amount: number) => void;
   onPaymentConfirm?: (transactionId: string) => void;
@@ -20,7 +20,7 @@ export const PaymentFlow: React.FC<PaymentFlowProps> = ({
   onPaymentInitiate,
   onPaymentConfirm,
 }) => {
-  const [localFlowState, setLocalFlowState] = useState<UGFTransaction>({
+  const [localFlowState, setLocalFlowState] = useState<UGFFlowState>({
     step: "login",
     isLoading: false,
     error: null,

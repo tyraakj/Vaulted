@@ -5,7 +5,7 @@ export const useWallet = () => {
   const [address, setAddress] = useState<string | null>(null);
   const [isConnected, setIsConnected] = useState(false);
   const [isCorrectNetwork, setIsCorrectNetwork] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const checkConnection = async () => {
     if (typeof window !== "undefined" && (window as any).ethereum) {
@@ -96,7 +96,7 @@ export const useWallet = () => {
   };
 
   const connect = async () => {
-    setLoading(true);
+    setIsLoading(true);
     try {
       if (typeof window !== "undefined" && (window as any).ethereum) {
         const accounts = await (window as any).ethereum.request({
@@ -118,7 +118,7 @@ export const useWallet = () => {
     } catch (error) {
       console.error("Failed to connect wallet:", error);
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
@@ -132,7 +132,7 @@ export const useWallet = () => {
     address,
     isConnected,
     isCorrectNetwork,
-    loading,
+      isLoading,
     connect,
     switchNetwork,
     disconnect,

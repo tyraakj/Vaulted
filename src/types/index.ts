@@ -26,7 +26,7 @@ export interface Milestone {
   completed: boolean;
 }
 
-export interface UGFTransaction {
+export interface UGFFlowState {
   step: UGFStep;
   isLoading: boolean;
   error: string | null;

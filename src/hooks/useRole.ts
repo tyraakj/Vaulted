@@ -26,19 +26,10 @@ export const useRole = () => {
     localStorage.removeItem("userRole");
   }, []);
 
-  const initializeRole = useCallback(() => {
-    if (typeof window !== "undefined") {
-      const savedRole = localStorage.getItem("userRole");
-      if (savedRole === "client" || savedRole === "freelancer") {
-        setRole(savedRole as Role);
-      }
-    }
-  }, []);
-
   return {
     role,
     saveRole,
     clearRole,
-    initializeRole,
+  };
   };
 };
