@@ -33,27 +33,51 @@ export const Footer: React.FC = () => {
           <h4>Protocol</h4>
           <ul>
             <li>
-              <a href="#">Smart Contract</a>
+              <a
+                href="https://sepolia.basescan.org"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Smart Contract
+              </a>
             </li>
             <li>
-              <a href="#">UGF Gasless Tx</a>
+              <a
+                href="https://docs.ugf.tychilabs.com"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                UGF Gasless Tx
+              </a>
             </li>
             <li>
-              <a href="#">Base Sepolia</a>
+              <a
+                href="https://sepolia.base.org"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Base Sepolia
+              </a>
             </li>
             <li>
-              <a href="#">Audit Report</a>
+              <a
+                href="https://github.com/OpenZeppelin/openzeppelin-contracts"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                OpenZeppelin
+              </a>
             </li>
           </ul>
         </div>
       </div>
 
       <div className="footer-bottom">
-        <p>© 2025 VAULTED_OS · Built on Base Sepolia</p>
+        <p>© 2026 VAULTED· Built on Base Sepolia</p>
         <div className="footer-bottom-links">
-          <a href="#">Terms</a>
-          <a href="#">Privacy</a>
-          <a href="#">Contact</a>
+          <Link to="/terms">Terms</Link>
+          <Link to="/privacy">Privacy</Link>
+          <Link to="/contact">Contact</Link>
         </div>
       </div>
     </footer>

@@ -1,6 +1,13 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 export const Privacy: React.FC = () => {
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
+    }, 0);
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
     <div className="legal-page">
       <div className="legal-header">
@@ -9,7 +16,7 @@ export const Privacy: React.FC = () => {
           Privacy <span className="em">Policy</span>
         </h1>
         <p className="legal-meta">
-          Last updated: May 2025 · Effective immediately
+          Last updated: May 2026 · Effective immediately
         </p>
       </div>
 
@@ -46,8 +53,8 @@ export const Privacy: React.FC = () => {
           <h2>3. On-Chain Data</h2>
           <p>
             All transactions you perform on Vaulted — posting jobs, accepting
-            work, releasing payments — are recorded on Base Sepolia blockchain.
-            This data is public, immutable, and not controlled by Vaulted. Your
+            work, releasing payments — are recorded on the Base blockchain. This
+            data is public, immutable, and not controlled by Vaulted. Your
             wallet address and transaction history are visible to anyone on the
             blockchain. This is the nature of public blockchains and is outside
             our control.
@@ -69,8 +76,8 @@ export const Privacy: React.FC = () => {
           <p>Vaulted interacts with the following third-party services:</p>
           <ul>
             <li>
-              <strong>MetaMask</strong> — wallet connection. Subject to
-              MetaMask's own privacy policy.
+              <strong>MetaMask / Wallets</strong> — wallet connection. Subject
+              to your specific wallet provider's privacy policy.
             </li>
             <li>
               <strong>UGF (Tychi Labs)</strong> — gasless transaction relay.
@@ -78,9 +85,8 @@ export const Privacy: React.FC = () => {
               personal data is shared.
             </li>
             <li>
-              <strong>Base Sepolia RPC</strong> — blockchain read/write.
-              Standard RPC requests may log your IP address per the RPC
-              provider's policy.
+              <strong>Base RPC</strong> — blockchain read/write. Standard RPC
+              requests may log your IP address per the RPC provider's policy.
             </li>
           </ul>
         </div>

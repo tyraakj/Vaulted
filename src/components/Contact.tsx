@@ -1,6 +1,13 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 export const Contact: React.FC = () => {
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
+    }, 0);
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
     <div className="legal-page">
       <div className="legal-header">
@@ -9,15 +16,14 @@ export const Contact: React.FC = () => {
           Get in <span className="em">Touch</span>
         </h1>
         <p className="legal-meta">
-          Built for the UGF Hackathon · Base Sepolia Testnet
+          We're here to help · Typically responds within 24 hours
         </p>
       </div>
 
       <div className="legal-body">
         <div className="legal-notice">
-          Vaulted is a hackathon project. Support is best-effort. For urgent
-          contract issues, check the Base Sepolia explorer directly using your
-          transaction hash.
+          For on-chain transaction issues, the Base explorer gives you real-time
+          status on any transaction using your wallet address or tx hash.
         </div>
 
         <div className="contact-grid">
@@ -25,11 +31,11 @@ export const Contact: React.FC = () => {
             <div className="contact-icon">⛓</div>
             <h3>On-Chain Issues</h3>
             <p>
-              Transaction stuck or failed? Check the Base Sepolia explorer with
-              your tx hash. Most issues resolve within a few blocks.
+              Transaction not confirming? Check the Base explorer with your tx
+              hash for real-time status and block confirmations.
             </p>
             <a
-              href="https://sepolia.basescan.org"
+              href="https://basescan.org"
               target="_blank"
               rel="noopener noreferrer"
               className="contact-link"
@@ -39,11 +45,45 @@ export const Contact: React.FC = () => {
           </div>
 
           <div className="contact-card">
+            <div className="contact-icon">📋</div>
+            <h3>Bug Reports</h3>
+            <p>
+              Spotted something unexpected in the UI or contract behavior? Open
+              an issue on GitHub with steps to reproduce.
+            </p>
+            <a
+              href="https://github.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="contact-link"
+            >
+              Open GitHub →
+            </a>
+          </div>
+
+          <div className="contact-card">
+            <div className="contact-icon">⚡</div>
+            <h3>Gasless Transaction Help</h3>
+            <p>
+              Issues with the UGF flow — login, quote, settle, or execute? The
+              UGF documentation covers all supported methods and error codes.
+            </p>
+            <a
+              href="https://docs.ugf.tychilabs.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="contact-link"
+            >
+              UGF Docs →
+            </a>
+          </div>
+
+          <div className="contact-card">
             <div className="contact-icon">💬</div>
             <h3>General Enquiries</h3>
             <p>
-              Questions about the project, hackathon submission, or potential
-              collaboration? Reach out via email.
+              Questions about the platform, integrations, or partnership
+              opportunities? Drop us a message and we'll get back to you.
             </p>
             <a href="mailto:hello@vaulted.dev" className="contact-link">
               hello@vaulted.dev →
@@ -58,41 +98,45 @@ export const Contact: React.FC = () => {
             <div className="faq-item">
               <h4>My payment isn't releasing — what do I do?</h4>
               <p>
-                If the client has approved your work, the payment should release
-                within a few seconds. If it's stuck, check the transaction on
-                Basescan. If no action is taken by the client within 7 days, the
-                auto-release will trigger automatically.
+                Once a client approves your milestone, the payment releases
+                within seconds. If there's a delay, check the transaction on
+                Basescan. If the client takes no action within 7 days of
+                completion, the auto-release triggers automatically — your
+                payment is always protected.
               </p>
             </div>
             <div className="faq-item">
-              <h4>I connected the wrong wallet — can I fix it?</h4>
+              <h4>I connected the wrong wallet — can I switch?</h4>
               <p>
-                Disconnect your wallet from the app, switch accounts in
-                MetaMask, and reconnect. Job ownership is tied to wallet address
-                on-chain and cannot be transferred.
+                Disconnect your current wallet, switch accounts in MetaMask, and
+                reconnect. Job ownership is tied to your wallet address
+                on-chain. Make sure you're using the correct wallet before
+                accepting or posting a job.
               </p>
             </div>
             <div className="faq-item">
               <h4>Why does it say "Wrong Network"?</h4>
               <p>
-                Vaulted only works on Base Sepolia (Chain ID: 84532). Open
-                MetaMask, switch to Base Sepolia, and refresh the page.
+                Vaulted runs securely on Base (Chain ID: 8453). Open MetaMask,
+                switch to the Base network, and refresh the page. All features
+                will be available once you're on the correct network.
               </p>
             </div>
             <div className="faq-item">
-              <h4>Where do I get Mock USD tokens?</h4>
+              <h4>Which tokens are supported?</h4>
               <p>
-                Mock USD (TYI_MOCK_USD) is provided by the UGF testnet. Check
-                the UGF documentation for the faucet address and instructions.
+                Vaulted currently supports USDC for escrow payments to ensure
+                stable, predictable value for both clients and freelancers.
               </p>
             </div>
             <div className="faq-item">
-              <h4>Is this a real product?</h4>
+              <h4>Is my escrow safe if something goes wrong?</h4>
               <p>
-                Vaulted is a hackathon prototype built for the UGF Hackathon on
-                Base Sepolia. It uses test tokens with no real monetary value.
-                It is not production-ready and should not be used with real
-                funds.
+                Yes. Funds are held entirely by the smart contract — not by
+                Vaulted. Even if this frontend goes offline, your escrow remains
+                intact on-chain and can be accessed directly through the
+                contract. The 7-day auto-release also ensures funds can never be
+                held indefinitely.
               </p>
             </div>
           </div>

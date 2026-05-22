@@ -113,7 +113,7 @@ export const NavBar: React.FC<NavBarProps> = ({
             </div>
           ) : (
             <button className="nav-links-mobile" onClick={onConnect}>
-              CONNECT_WALLET
+              CONNECT WALLET
             </button>
           )}
         </div>

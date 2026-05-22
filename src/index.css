@@ -56,7 +56,7 @@ body {
   background: var(--bg);
   color: var(--t1);
   font-family: var(--sans);
-  font-size: 16px;
+  font-size: 18px;
   line-height: 1.7;
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
@@ -111,8 +111,7 @@ a:hover {
 
 .app-main {
   flex: 1;
-  padding: 48px 32px;
-  max-width: 1100px;
+  padding: 40px 64px;
   width: 100%;
   margin: 0 auto;
 }
@@ -127,10 +126,10 @@ a:hover {
 }
 
 .navbar-container {
-  max-width: 1100px;
+  width: 100%;
   margin: 0 auto;
-  padding: 0 32px;
-  height: 54px;
+  padding: 0 80px;
+  height: 64px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -138,7 +137,7 @@ a:hover {
 
 .navbar-logo {
   font-family: var(--display);
-  font-size: 18px;
+  font-size: 22px;
   font-weight: 900;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -179,7 +178,7 @@ a:hover {
 .nav-links {
   color: var(--t1);
   font-family: var(--mono);
-  font-size: 11px;
+  font-size: 15px;
   font-weight: 500;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -197,7 +196,7 @@ a:hover {
 
 .nav-links-mobile {
   font-family: var(--mono);
-  font-size: 11px;
+  font-size: 15px;
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -270,7 +269,7 @@ input,
 textarea,
 select {
   font-family: var(--mono);
-  font-size: 13px;
+  font-size: 15px;
   background: var(--bg-ch);
   color: var(--t1);
   border: 1px solid var(--b2);
@@ -304,7 +303,7 @@ select option {
 }
 .form-group label {
   font-family: var(--mono);
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 600;
   color: var(--t3);
   text-transform: uppercase;
@@ -374,7 +373,7 @@ select option {
 }
 .role-select h3 {
   font-family: var(--mono);
-  font-size: 9px;
+  font-size: 11px;
   color: var(--t3);
   text-transform: uppercase;
   letter-spacing: 0.12em;
@@ -428,7 +427,7 @@ select option {
 
 /* ─── HOME PAGE ─── */
 .home {
-  max-width: 1000px;
+  width: 100%;
   margin: 0 auto;
 }
 
@@ -466,7 +465,7 @@ select option {
   align-items: center;
   gap: 7px;
   font-family: var(--mono);
-  font-size: 10px;
+  font-size: 12px;
   color: var(--em);
   background: var(--em-d);
   border: 1px solid var(--em-b);
@@ -508,7 +507,7 @@ select option {
 
 .hero p {
   font-family: var(--sans);
-  font-size: 15px;
+  font-size: 18px;
   color: var(--t2);
   max-width: 480px;
   margin: 0 auto 40px;
@@ -526,8 +525,8 @@ select option {
   z-index: 1;
 }
 .cta-buttons .btn {
-  font-size: 12px;
-  padding: 12px 28px;
+  font-size: 14px;
+  padding: 14px 32px;
   border-radius: 99px;
 }
 .cta-buttons .btn-primary {
@@ -540,7 +539,7 @@ select option {
   align-items: center;
   gap: 7px;
   font-family: var(--mono);
-  font-size: 0.68rem;
+  font-size: 0.85rem;
   color: var(--em);
   background: var(--em-d);
   border: 1px solid var(--em-b);
@@ -577,7 +576,7 @@ select option {
 
 .sec-sub {
   font-family: var(--sans);
-  font-size: 0.95rem;
+  font-size: 1.05rem;
   color: var(--t2);
   max-width: 540px;
   line-height: 1.75;
@@ -687,7 +686,7 @@ select option {
 
 .feature-stat {
   font-family: var(--mono);
-  font-size: 1.6rem;
+  font-size: 2rem;
   font-weight: 700;
   margin-bottom: 4px;
   line-height: 1;
@@ -702,7 +701,7 @@ select option {
 
 .feature-stat-label {
   font-family: var(--mono);
-  font-size: 0.68rem;
+  font-size: 0.82rem;
   color: var(--t3);
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -711,7 +710,7 @@ select option {
 
 .feature h3 {
   font-family: var(--display);
-  font-size: 1.15rem;
+  font-size: 1.5rem;
   font-weight: 800;
   color: var(--t1);
   margin-bottom: 8px;
@@ -720,7 +719,7 @@ select option {
 }
 .feature p {
   font-family: var(--sans);
-  font-size: 0.88rem;
+  font-size: 1rem;
   color: var(--t2);
   line-height: 1.72;
 }
@@ -730,7 +729,7 @@ select option {
   align-items: center;
   gap: 5px;
   font-family: var(--mono);
-  font-size: 0.6rem;
+  font-size: 0.75rem;
   font-weight: 600;
   padding: 3px 10px;
   border-radius: 99px;
@@ -757,7 +756,7 @@ select option {
   width: 100%;
   height: 1px;
   background: linear-gradient(90deg, transparent, var(--em-b), transparent);
-  margin: 64px 0;
+  margin: 40px 0;
 }
 
 /* ─── POST JOB ─── */
@@ -794,7 +793,7 @@ select option {
   top: -10px;
   left: 20px;
   font-family: var(--mono);
-  font-size: 10px;
+  font-size: 12px;
   color: var(--em);
   background: var(--bg);
   padding: 0 8px;
@@ -879,14 +878,14 @@ select option {
 }
 
 .job-card h3 {
-  font-size: 15px;
+  font-size: 18px;
   font-weight: 700;
   margin-bottom: 8px;
   letter-spacing: -0.01em;
 }
 .job-card .description {
   font-family: var(--mono);
-  font-size: 12px;
+  font-size: 14px;
   color: var(--t2);
   margin-bottom: 16px;
   line-height: 1.65;
@@ -900,7 +899,7 @@ select option {
 }
 .job-meta .budget {
   font-family: var(--mono);
-  font-size: 20px;
+  font-size: 24px;
   font-weight: 700;
   color: var(--em);
   letter-spacing: -0.02em;
@@ -919,7 +918,7 @@ select option {
   align-items: center;
   gap: 5px;
   font-family: var(--mono);
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -1016,7 +1015,7 @@ select option {
 
 .stat-card h3 {
   font-family: var(--mono);
-  font-size: 9px;
+  font-size: 11px;
   color: var(--t3);
   text-transform: uppercase;
   letter-spacing: 0.1em;
@@ -1024,7 +1023,7 @@ select option {
 }
 .stat-value {
   font-family: var(--mono);
-  font-size: 28px;
+  font-size: 36px;
   font-weight: 700;
   color: var(--em);
   letter-spacing: -0.02em;
@@ -1058,7 +1057,7 @@ select option {
 }
 .job-info .description {
   font-family: var(--mono);
-  font-size: 13px;
+  font-size: 15px;
   color: var(--t2);
   line-height: 1.8;
   margin-bottom: 20px;
@@ -1145,7 +1144,7 @@ select option {
 }
 .step-label {
   font-family: var(--mono);
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 500;
   letter-spacing: 0.04em;
 }
@@ -1167,20 +1166,20 @@ select option {
   top: -10px;
   left: 20px;
   font-family: var(--mono);
-  font-size: 10px;
+  font-size: 12px;
   color: var(--em);
   background: var(--bg);
   padding: 0 8px;
   letter-spacing: 0.08em;
 }
 .payment-flow h3 {
-  font-size: 14px;
+  font-size: 17px;
   font-weight: 700;
   margin-bottom: 18px;
 }
 .payment-flow p {
   font-family: var(--mono);
-  font-size: 13px;
+  font-size: 15px;
   color: var(--t2);
 }
 .payment-flow button {
@@ -1237,16 +1236,18 @@ select option {
 }
 
 /* ─── RESPONSIVE ─── */
-/* ─── RESPONSIVE — 1024px (tablet landscape) ─── */
 @media (max-width: 1024px) {
   .app-main {
-    padding: 40px 24px;
+    padding: 40px 40px;
   }
   .navbar-container {
-    padding: 0 24px;
+    padding: 0 40px;
   }
   .app-header {
-    padding: 8px 24px;
+    padding: 8px 80px;
+  }
+  .footer {
+    padding: 48px 40px 28px;
   }
   .hero h1 {
     font-size: clamp(44px, 7vw, 72px);
@@ -1266,18 +1267,20 @@ select option {
   }
 }
 
-/* ─── RESPONSIVE — 768px (tablet portrait) ─── */
 @media (max-width: 768px) {
   .app-main {
-    padding: 28px 16px;
+    padding: 28px 24px;
   }
   .navbar-container {
-    padding: 0 16px;
+    padding: 0 24px;
   }
   .app-header {
-    padding: 8px 16px;
+    padding: 8px 24px;
     flex-direction: column;
     align-items: flex-start;
+  }
+  .footer {
+    padding: 40px 24px 24px;
   }
   .hero {
     padding: 56px 0 40px;
@@ -1344,14 +1347,16 @@ select option {
   }
 }
 
-/* ─── RESPONSIVE — 480px (mobile) ─── */
 @media (max-width: 480px) {
   .app-main {
-    padding: 20px 14px;
+    padding: 20px 16px;
   }
   .navbar-container {
-    padding: 0 14px;
+    padding: 0 16px;
     height: 48px;
+  }
+  .footer {
+    padding: 32px 16px 20px;
   }
   .navbar-logo {
     font-size: 15px;
@@ -1537,14 +1542,14 @@ select option {
 }
 
 .hfc-label {
-  font-size: 9px;
+  font-size: 11px;
   color: var(--t3);
   letter-spacing: 0.1em;
   text-transform: uppercase;
   margin-bottom: 5px;
 }
 .hfc-val {
-  font-size: 17px;
+  font-size: 20px;
   font-weight: 700;
   color: var(--em);
   letter-spacing: -0.01em;
@@ -1560,7 +1565,7 @@ select option {
   color: var(--em);
 }
 .hfc-addr {
-  font-size: 10px;
+  font-size: 12px;
   color: var(--t3);
   margin-bottom: 8px;
 }
@@ -1589,9 +1594,9 @@ select option {
   flex-wrap: wrap;
 }
 .hfc-badge {
-  font-size: 9px;
+  font-size: 11px;
   font-weight: 600;
-  padding: 2px 7px;
+  padding: 3px 9px;
   border-radius: 99px;
   letter-spacing: 0.04em;
 }
@@ -1647,7 +1652,7 @@ select option {
 
 .wf-step {
   position: relative;
-  padding: 28px 28px 28px 0;
+  padding: 20px 28px 20px 0;
   border-bottom: 1px solid var(--b1);
   opacity: 0;
   transform: translateX(-20px);
@@ -1671,7 +1676,7 @@ select option {
   align-items: center;
   justify-content: center;
   font-family: var(--mono);
-  font-size: 0.68rem;
+  font-size: 0.82rem;
   font-weight: 700;
   border: 2px solid;
   flex-shrink: 0;
@@ -1705,7 +1710,7 @@ select option {
 
 .wf-tag {
   font-family: var(--mono);
-  font-size: 0.6rem;
+  font-size: 0.75rem;
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -1724,7 +1729,7 @@ select option {
 
 .wf-step h3 {
   font-family: var(--display);
-  font-size: 1.3rem;
+  font-size: 1.5rem;
   font-weight: 800;
   color: var(--t1);
   margin-bottom: 8px;
@@ -1733,10 +1738,10 @@ select option {
 }
 .wf-step p {
   font-family: var(--sans);
-  font-size: 0.92rem;
+  font-size: 1.05rem;
   color: var(--t2);
   line-height: 1.72;
-  max-width: 520px;
+  max-width: 100%;
 }
 
 .wf-chip {
@@ -1744,7 +1749,7 @@ select option {
   align-items: center;
   gap: 6px;
   font-family: var(--mono);
-  font-size: 0.68rem;
+  font-size: 0.82rem;
   background: var(--bg-o);
   border: 1px solid var(--b1);
   padding: 6px 12px;
@@ -1783,14 +1788,14 @@ select option {
     transform 0.45s ease;
 }
 .wf-visual-label {
-  font-size: 0.58rem;
+  font-size: 0.72rem;
   color: var(--t3);
   letter-spacing: 0.1em;
   text-transform: uppercase;
   margin-bottom: 5px;
 }
 .wf-visual-val {
-  font-size: 1.1rem;
+  font-size: 1.4rem;
   font-weight: 700;
   margin-bottom: 2px;
 }
@@ -1835,8 +1840,8 @@ select option {
   flex-wrap: wrap;
 }
 .wbdg {
-  font-size: 0.58rem;
-  padding: 2px 8px;
+  font-size: 0.72rem;
+  padding: 3px 10px;
   border-radius: 99px;
   font-weight: 600;
   letter-spacing: 0.04em;
@@ -1950,8 +1955,8 @@ select option {
   z-index: 1;
 }
 .cta-buttons-wrap .btn {
-  font-size: 12px;
-  padding: 12px 28px;
+  font-size: 14px;
+  padding: 14px 32px;
   border-radius: 99px;
 }
 
@@ -1959,12 +1964,12 @@ select option {
 .footer {
   background: var(--bg-s);
   border-top: 1px solid var(--b2);
-  padding: 48px 32px 28px;
+  padding: 48px 80px 28px;
   margin-top: auto;
 }
 
 .footer-inner {
-  max-width: 1100px;
+  width: 100%;
   margin: 0 auto;
   display: grid;
   grid-template-columns: 1.5fr repeat(2, 1fr);
@@ -1976,7 +1981,7 @@ select option {
 }
 .footer-logo {
   font-family: var(--display);
-  font-size: 20px;
+  font-size: 24px;
   font-weight: 900;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -1996,7 +2001,7 @@ select option {
 }
 .footer-brand p {
   font-family: var(--sans);
-  font-size: 0.88rem;
+  font-size: 1rem;
   color: var(--t1);
   line-height: 1.7;
   max-width: 220px;
@@ -2005,7 +2010,7 @@ select option {
 
 .footer-col h4 {
   font-family: var(--mono);
-  font-size: 0.68rem;
+  font-size: 0.82rem;
   font-weight: 600;
   color: var(--em);
   text-transform: uppercase;
@@ -2020,7 +2025,7 @@ select option {
 }
 .footer-col a {
   font-family: var(--sans);
-  font-size: 0.9rem;
+  font-size: 1.05rem;
   color: var(--t1);
   opacity: 0.65;
   transition:
@@ -2033,7 +2038,7 @@ select option {
 }
 
 .footer-bottom {
-  max-width: 1100px;
+  width: 100%;
   margin: 0 auto;
   padding-top: 20px;
   border-top: 1px solid var(--b1);
@@ -2045,7 +2050,7 @@ select option {
 }
 .footer-bottom p {
   font-family: var(--mono);
-  font-size: 0.68rem;
+  font-size: 0.8rem;
   color: var(--t1);
   letter-spacing: 0.06em;
   opacity: 0.45;
@@ -2056,7 +2061,7 @@ select option {
 }
 .footer-bottom-links a {
   font-family: var(--mono);
-  font-size: 0.68rem;
+  font-size: 0.8rem;
   color: var(--t1);
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -2115,7 +2120,7 @@ select option {
   border-radius: var(--radius-lg);
   padding: 16px 20px;
   font-family: var(--sans);
-  font-size: 0.88rem;
+  font-size: 1rem;
   color: var(--em);
   line-height: 1.6;
   margin-bottom: 40px;
@@ -2137,7 +2142,7 @@ select option {
 
 .legal-section h2 {
   font-family: var(--display);
-  font-size: 1.1rem;
+  font-size: 1.25rem;
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.04em;
@@ -2146,7 +2151,7 @@ select option {
 }
 .legal-section p {
   font-family: var(--sans);
-  font-size: 0.92rem;
+  font-size: 1.05rem;
   color: var(--t2);
   line-height: 1.8;
   margin-bottom: 10px;
@@ -2161,7 +2166,7 @@ select option {
 }
 .legal-section ul li {
   font-family: var(--sans);
-  font-size: 0.9rem;
+  font-size: 1.02rem;
   color: var(--t2);
   display: flex;
   align-items: flex-start;
@@ -2215,7 +2220,7 @@ select option {
 
 .contact-card h3 {
   font-family: var(--display);
-  font-size: 1rem;
+  font-size: 1.2rem;
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.04em;
@@ -2224,7 +2229,7 @@ select option {
 }
 .contact-card p {
   font-family: var(--sans);
-  font-size: 0.88rem;
+  font-size: 1rem;
   color: var(--t2);
   line-height: 1.7;
   margin-bottom: 16px;
@@ -2258,14 +2263,14 @@ select option {
 
 .faq-item h4 {
   font-family: var(--sans);
-  font-size: 0.95rem;
+  font-size: 1.1rem;
   font-weight: 600;
   color: var(--t1);
   margin-bottom: 8px;
 }
 .faq-item p {
   font-family: var(--sans);
-  font-size: 0.88rem;
+  font-size: 1rem;
   color: var(--t2);
   line-height: 1.75;
 }
