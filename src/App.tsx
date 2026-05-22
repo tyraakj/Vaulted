@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -8,25 +8,16 @@ import {
 import { useWallet } from "./hooks/useWallet";
 import { useRole } from "./hooks/useRole";
 import { NavBar } from "./components/NavBar";
+import { Footer } from "./components/Footer";
 import { Home } from "./pages/Home";
 import { PostJob } from "./pages/PostJob";
 import { BrowseJobs } from "./pages/BrowseJobs";
 import { Dashboard } from "./pages/Dashboard";
 import { JobDetail } from "./pages/JobDetail";
-import { Footer } from "./components/Footer";
 import { Terms } from "./components/Terms";
 import { Privacy } from "./components/Privacy";
 import { Contact } from "./components/Contact";
-/**
- * NAV BUG FIX:
- * Removed ProtectedRoute wrappers from /browse and /dashboard —
- * ProtectedRoute was redirecting to "/" whenever wallet wasn't connected,
- * making every nav link appear broken. Access control now happens
- * inside each page component where context is available.
- *
- * app-onboarding overlay also removed — it was position:fixed and
- * blocking all pointer events on the page underneath.
- */
+
 export const App: React.FC = () => {
   const { address, isConnected, isCorrectNetwork, connect, disconnect } =
     useWallet();
@@ -47,7 +38,6 @@ export const App: React.FC = () => {
           userRole={role}
           onRoleChange={saveRole}
         />
-
         <main className="app-main">
           <Routes>
             <Route path="/" element={<Home />} />
@@ -55,10 +45,10 @@ export const App: React.FC = () => {
             <Route path="/browse" element={<BrowseJobs />} />
             <Route path="/job/:jobId" element={<JobDetail />} />
             <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="*" element={<Navigate to="/" replace />} />
             <Route path="/terms" element={<Terms />} />
             <Route path="/privacy" element={<Privacy />} />
             <Route path="/contact" element={<Contact />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </main>
         <Footer />
