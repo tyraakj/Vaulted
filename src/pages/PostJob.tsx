@@ -20,51 +20,64 @@ export const PostJob: React.FC = () => {
   };
 
   const { encodeApprove, encodeCreateJob } = useContract();
-  const { runFlow } = useUGF();
+  const { runFlow, flowState } = useUGF();
   const { address, isConnected, isCorrectNetwork } = useWallet();
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    (async () => {
-      // Ensure wallet and network
-      if (!isConnected || !isCorrectNetwork) {
-        console.error("Wallet not connected or wrong network");
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = async () => {
+    console.log("PostJob.handleSubmit called");
+    setErrorMessage(null);
+    setSuccessMessage(null);
+
+    // Wallet/network guards with visible feedback
+    if (!isConnected) {
+      setErrorMessage("Please connect your wallet before deploying a contract.");
+      return;
+    }
+    if (!isCorrectNetwork) {
+      setErrorMessage("Please switch your wallet to Base Sepolia network.");
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      // Encode and run approve via UGF
+      const approveCalldata = encodeApprove(CONTRACT_ADDRESS, formData.amount);
+      if (!approveCalldata) throw new Error("Failed to encode approve calldata");
+
+      const approveRes = await runFlow(address || "", approveCalldata);
+      if (!approveRes.success) {
+        setErrorMessage(approveRes.error || "Approve failed");
         return;
       }
 
-      try {
-        // Approve Mock USD to transfer tokens to escrow contract
-        const approveCalldata = encodeApprove(CONTRACT_ADDRESS, formData.amount);
-        if (!approveCalldata) throw new Error("Failed to encode approve calldata");
+      // Encode and run createJob via UGF
+      const createCalldata = encodeCreateJob(formData.title, formData.description, formData.amount);
+      if (!createCalldata) throw new Error("Failed to encode createJob calldata");
 
-        const approveRes = await runFlow(address || "", approveCalldata);
-        if (!approveRes.success) {
-          console.error("Approve failed:", approveRes.error);
-          return;
-        }
-
-        // Create job
-        const createCalldata = encodeCreateJob(formData.title, formData.description, formData.amount);
-        if (!createCalldata) throw new Error("Failed to encode createJob calldata");
-
-        const createRes = await runFlow(address || "", createCalldata);
-        if (!createRes.success) {
-          console.error("Create job failed:", createRes.error);
-          return;
-        }
-
-        console.log("Contract deployed / job created, tx:", createRes.txHash);
-      } catch (err) {
-        console.error(err);
+      const createRes = await runFlow(address || "", createCalldata);
+      if (!createRes.success) {
+        setErrorMessage(createRes.error || "Create job failed");
+        return;
       }
-    })();
+
+      setSuccessMessage(`Job created — tx: ${createRes.txHash}`);
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Unknown error";
+      setErrorMessage(msg);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
     <div className="post-job">
       <h1>Deploy New Contract</h1>
 
-      <form onSubmit={handleSubmit} className="job-form">
+      <div className="job-form">
         <div className="form-group">
           <label htmlFor="title">CONTRACT_TITLE</label>
           <input
@@ -115,10 +128,14 @@ export const PostJob: React.FC = () => {
           />
         </div>
 
-        <button type="submit" className="btn btn-primary">
-          DEPLOY_CONTRACT →
-        </button>
-      </form>
+        <div style={{ marginTop: 16, display: "flex", gap: 8, alignItems: "center" }}>
+          <button type="button" className="btn btn-primary" onClick={handleSubmit} disabled={isSubmitting || flowState.isLoading}>
+            {isSubmitting || flowState.isLoading ? `${flowState.step.toUpperCase()}...` : "DEPLOY_CONTRACT →"}
+          </button>
+          {errorMessage && <div className="form-error" style={{ color: "#f87171" }}>{errorMessage}</div>}
+          {successMessage && <div className="form-success" style={{ color: "#10b981" }}>{successMessage}</div>}
+        </div>
+      </div>
     </div>
   );
 };
