@@ -14,6 +14,9 @@ import { BrowseJobs } from "./pages/BrowseJobs";
 import { Dashboard } from "./pages/Dashboard";
 import { JobDetail } from "./pages/JobDetail";
 import { Footer } from "./components/Footer";
+import { Terms } from "./pages/Terms";
+import { Privacy } from "./pages/Privacy";
+import { Contact } from "./pages/Contact";
 /**
  * NAV BUG FIX:
  * Removed ProtectedRoute wrappers from /browse and /dashboard —
@@ -53,6 +56,9 @@ export const App: React.FC = () => {
             <Route path="/job/:jobId" element={<JobDetail />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="*" element={<Navigate to="/" replace />} />
+            <Route path="/terms" element={<Terms />} />
+            <Route path="/privacy" element={<Privacy />} />
+            <Route path="/contact" element={<Contact />} />
           </Routes>
         </main>
         <Footer />
