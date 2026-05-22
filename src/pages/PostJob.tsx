@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { useContract } from "../hooks/useContract";
 import { useUGF } from "../hooks/useUGF";
 import { useWallet } from "../hooks/useWallet";
-import { CONTRACT_ADDRESS } from "../lib/constants";
 
 export const PostJob: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -19,7 +18,7 @@ export const PostJob: React.FC = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const { encodeApprove, encodeCreateJob } = useContract();
+  const { encodeCreateJob } = useContract();
   const { runFlow, flowState } = useUGF();
   const { address, isConnected, isCorrectNetwork } = useWallet();
 
@@ -44,16 +43,6 @@ export const PostJob: React.FC = () => {
 
     setIsSubmitting(true);
     try {
-      // Encode and run approve via UGF
-      const approveCalldata = encodeApprove(CONTRACT_ADDRESS, formData.amount);
-      if (!approveCalldata) throw new Error("Failed to encode approve calldata");
-
-      const approveRes = await runFlow(address || "", approveCalldata);
-      if (!approveRes.success) {
-        setErrorMessage(approveRes.error || "Approve failed");
-        return;
-      }
-
       // Encode and run createJob via UGF
       const createCalldata = encodeCreateJob(formData.title, formData.description, formData.amount);
       if (!createCalldata) throw new Error("Failed to encode createJob calldata");
