@@ -91,6 +91,7 @@ contract Escrow is Ownable {
     function disputeJob(uint256 jobId) external {
         Job storage j = jobs[jobId];
         require(msg.sender == j.client || msg.sender == j.freelancer, "Only client or freelancer can dispute");
+        require(j.status == JobStatus.Active || j.status == JobStatus.Complete, "Cannot dispute at this stage");
 
         j.status = JobStatus.Disputed;
 
