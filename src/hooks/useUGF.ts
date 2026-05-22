@@ -1,6 +1,7 @@
 import { useState, useCallback } from "react";
 import type { UGFStep, UGFFlowState } from "../types";
 import { UGF_ENDPOINT } from "../lib/constants";
+import UGFClient from "../lib/ugf";
 
 interface UGFQuoteResponse {
   gasEstimate: string;
@@ -155,6 +156,11 @@ export const useUGF = () => {
       address: string,
       calldata: string,
     ): Promise<{ success: boolean; txHash?: string; error?: string }> => {
+      // Guard: ensure UGF is configured before attempting network calls
+      if (!UGFClient.isConfigured()) {
+        console.error("UGF endpoint not configured. Aborting runFlow.");
+        return { success: false, error: "UGF endpoint not configured" };
+      }
       // Step 1: Login
       const loginRes = await login(address);
       if (!loginRes.success) {

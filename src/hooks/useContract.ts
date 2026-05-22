@@ -162,6 +162,20 @@ export const useContract = () => {
     [],
   );
 
+    // ENCODE: Approve Mock USD to spender (ERC-20 approve)
+    const encodeApprove = useCallback((spender: string, amount: string): string => {
+      try {
+        // ERC-20 approve ABI
+        const erc20Iface = new ethers.Interface(["function approve(address spender, uint256 amount) external returns (bool)"]);
+        const amountWei = ethers.parseEther(amount);
+        return erc20Iface.encodeFunctionData("approve", [spender, amountWei]);
+      } catch (err) {
+        const errorMsg = err instanceof Error ? err.message : "Encoding failed";
+        setError(errorMsg);
+        return "";
+      }
+    }, []);
+
   // ENCODE: Accept job (returns calldata for UGF to execute)
   const encodeAcceptJob = useCallback((jobId: string): string => {
     try {
@@ -268,6 +282,7 @@ export const useContract = () => {
     getJob,
     getAllJobs,
     encodeCreateJob,
+    encodeApprove,
     encodeAcceptJob,
     encodeSubmitMilestone,
     encodeReleasePayment,

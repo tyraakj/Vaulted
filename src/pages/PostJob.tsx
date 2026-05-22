@@ -1,4 +1,8 @@
 import React, { useState } from "react";
+import { useContract } from "../hooks/useContract";
+import { useUGF } from "../hooks/useUGF";
+import { useWallet } from "../hooks/useWallet";
+import { CONTRACT_ADDRESS } from "../lib/constants";
 
 export const PostJob: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -15,16 +19,45 @@ export const PostJob: React.FC = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  const { encodeApprove, encodeCreateJob } = useContract();
+  const { runFlow } = useUGF();
+  const { address, isConnected, isCorrectNetwork } = useWallet();
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Encode calldata and broadcast via UGF relayer
-    const payload = {
-      title: formData.title,
-      description: formData.description,
-      amount: Number(formData.amount),
-      autoReleaseAt: new Date(formData.autoReleaseAt).getTime(),
-    };
-    console.log("Broadcasting escrow contract payload:", payload);
+    (async () => {
+      // Ensure wallet and network
+      if (!isConnected || !isCorrectNetwork) {
+        console.error("Wallet not connected or wrong network");
+        return;
+      }
+
+      try {
+        // Approve Mock USD to transfer tokens to escrow contract
+        const approveCalldata = encodeApprove(CONTRACT_ADDRESS, formData.amount);
+        if (!approveCalldata) throw new Error("Failed to encode approve calldata");
+
+        const approveRes = await runFlow(address || "", approveCalldata);
+        if (!approveRes.success) {
+          console.error("Approve failed:", approveRes.error);
+          return;
+        }
+
+        // Create job
+        const createCalldata = encodeCreateJob(formData.title, formData.description, formData.amount);
+        if (!createCalldata) throw new Error("Failed to encode createJob calldata");
+
+        const createRes = await runFlow(address || "", createCalldata);
+        if (!createRes.success) {
+          console.error("Create job failed:", createRes.error);
+          return;
+        }
+
+        console.log("Contract deployed / job created, tx:", createRes.txHash);
+      } catch (err) {
+        console.error(err);
+      }
+    })();
   };
 
   return (

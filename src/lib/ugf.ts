@@ -20,9 +20,11 @@ export const UGFClient = {
   mockUsdAddress: MOCK_USD_ADDRESS,
 
   isConfigured: (): boolean => {
-    return (
-      !!UGF_ENDPOINT && !!MOCK_USD_ADDRESS && BASE_SEPOLIA_CHAIN_ID === 84532
-    );
+    const ok = !!UGF_ENDPOINT && !!MOCK_USD_ADDRESS;
+    if (!ok) {
+      console.error("UGFClient not configured: please set VITE_UGF_ENDPOINT and VITE_MOCK_USD_ADDRESS in your .env and ensure BASE_SEPOLIA_CHAIN_ID is correct.");
+    }
+    return ok;
   },
 
   getConfig: () => ({
