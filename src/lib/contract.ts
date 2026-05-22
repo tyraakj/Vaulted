@@ -33,6 +33,13 @@ export const VAULTED_CONTRACT_ABI = [
     "name": "releasePayment", "outputs": [], "stateMutability": "nonpayable", "type": "function"
   },
   {
+    "inputs": [
+      { "internalType": "uint256", "name": "jobId", "type": "uint256" },
+      { "internalType": "uint256", "name": "freelancerAmount", "type": "uint256" }
+    ],
+    "name": "resolveDispute", "outputs": [], "stateMutability": "nonpayable", "type": "function"
+  },
+  {
     "inputs": [],
     "name": "renounceOwnership", "outputs": [], "stateMutability": "nonpayable", "type": "function"
   },

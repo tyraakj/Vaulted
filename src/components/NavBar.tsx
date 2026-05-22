@@ -1,6 +1,8 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import { Link, useLocation } from "react-router-dom";
 import type { Role } from "../types";
+import { useContract } from "../hooks/useContract";
+import { ethers } from "ethers";
 
 // GSAP loaded via CDN in index.html — declare global
 declare const gsap: any;
@@ -14,6 +16,8 @@ interface NavBarProps {
   onRoleChange?: (role: Role) => void;
 }
 
+const isMockMode = import.meta.env.VITE_UGF_MOCK === "true";
+
 export const NavBar: React.FC<NavBarProps> = ({
   isConnected,
   onConnect,
@@ -24,6 +28,51 @@ export const NavBar: React.FC<NavBarProps> = ({
 }) => {
   const location = useLocation();
   const navRef = useRef<HTMLElement>(null);
+  
+  const { getMockUsdBalance } = useContract();
+  const [balance, setBalance] = useState<string | null>(null);
+
+  const fetchBalance = useCallback(async () => {
+    if (isConnected && address) {
+      try {
+        const bal = await getMockUsdBalance(address);
+        setBalance(
+          Number(ethers.formatUnits(bal, 6)).toLocaleString(undefined, {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          })
+        );
+      } catch (e) {
+        console.error("Failed to fetch balance in NavBar:", e);
+      }
+    } else {
+      setBalance(null);
+    }
+  }, [isConnected, address, getMockUsdBalance]);
+
+  // Handle click on Faucet
+  const handleFaucetClick = async (e: React.MouseEvent) => {
+    if (isMockMode) {
+      e.preventDefault();
+      if (!isConnected || !address) {
+        alert("Please connect your wallet first.");
+        return;
+      }
+      try {
+        const balances = JSON.parse(localStorage.getItem("vaulted_mock_balances") || "{}");
+        const addrLower = address.toLowerCase();
+        const currentBal = BigInt(balances[addrLower] || "0");
+        const faucetAmount = ethers.parseUnits("10000", 6);
+        balances[addrLower] = (currentBal + faucetAmount).toString();
+        localStorage.setItem("vaulted_mock_balances", JSON.stringify(balances));
+        
+        window.dispatchEvent(new Event("balanceUpdated"));
+        alert("Faucet success! Added 10,000 Mock USD to your wallet balance.");
+      } catch (err) {
+        console.error("Faucet error:", err);
+      }
+    }
+  };
 
   // GSAP: slide navbar in on mount
   useEffect(() => {
@@ -49,6 +98,25 @@ export const NavBar: React.FC<NavBarProps> = ({
       }
     }
   }, [location.pathname]);
+
+  // Sync balance
+  useEffect(() => {
+    fetchBalance();
+
+    const handleUpdate = () => {
+      fetchBalance();
+    };
+
+    window.addEventListener("balanceUpdated", handleUpdate);
+    window.addEventListener("roleChanged", handleUpdate);
+    window.addEventListener("storage", handleUpdate);
+
+    return () => {
+      window.removeEventListener("balanceUpdated", handleUpdate);
+      window.removeEventListener("roleChanged", handleUpdate);
+      window.removeEventListener("storage", handleUpdate);
+    };
+  }, [isConnected, address, fetchBalance]);
 
   const isActive = (path: string) => location.pathname === path;
 
@@ -105,9 +173,31 @@ export const NavBar: React.FC<NavBarProps> = ({
         {/* Right — network badge + wallet */}
         <div className="navbar-right">
           <div className="network-badge">BASE_SEPOLIA</div>
+          <a
+            href="https://universalgasframework.com/faucets"
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={handleFaucetClick}
+            style={{
+              fontFamily: "var(--mono)",
+              fontSize: "12px",
+              color: "var(--gld)",
+              border: "1px solid var(--gld-b)",
+              borderRadius: "var(--radius)",
+              padding: "4px 10px",
+              textTransform: "uppercase",
+              display: "flex",
+              alignItems: "center",
+              gap: "4px",
+              marginRight: "8px",
+              textDecoration: "none"
+            }}
+          >
+            🚰 Faucet
+          </a>
           <div style={{ marginRight: 12, display: "flex", gap: 8, alignItems: "center" }}>
             <button
-              className={`role-button ${userRole === "client" ? "active" : ""}`}
+              className={`nav-role-button ${userRole === "client" ? "active" : ""}`}
               onClick={() => onRoleChange && onRoleChange("client")}
               type="button"
               aria-pressed={userRole === "client"}
@@ -117,7 +207,7 @@ export const NavBar: React.FC<NavBarProps> = ({
             </button>
 
             <button
-              className={`role-button ${userRole === "freelancer" ? "active" : ""}`}
+              className={`nav-role-button ${userRole === "freelancer" ? "active" : ""}`}
               onClick={() => onRoleChange && onRoleChange("freelancer")}
               type="button"
               aria-pressed={userRole === "freelancer"}
@@ -127,11 +217,26 @@ export const NavBar: React.FC<NavBarProps> = ({
             </button>
           </div>
           {isConnected && shortAddr ? (
-            <div className="wallet-pill-connected">
-              <span className="wallet-pill-addr">{shortAddr}</span>
-              <button className="wallet-pill-disconnect" onClick={onDisconnect}>
-                ×
-              </button>
+            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+              {balance !== null && (
+                <span className="wallet-balance" style={{
+                  fontFamily: "var(--mono)",
+                  fontSize: "12px",
+                  color: "var(--em)",
+                  background: "var(--bg-ch)",
+                  border: "1px solid var(--b2)",
+                  borderRadius: "var(--radius)",
+                  padding: "4px 8px"
+                }}>
+                  {balance} MockUSD
+                </span>
+              )}
+              <div className="wallet-pill-connected">
+                <span className="wallet-pill-addr">{shortAddr}</span>
+                <button className="wallet-pill-disconnect" onClick={onDisconnect}>
+                  ×
+                </button>
+              </div>
             </div>
           ) : (
             <button className="nav-links-mobile" onClick={onConnect}>

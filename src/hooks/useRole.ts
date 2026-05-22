@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import type { Role } from "../types";
 
 export const useRole = () => {
@@ -11,6 +11,29 @@ export const useRole = () => {
     }
     return null;
   });
+
+  useEffect(() => {
+    const handleRoleChange = () => {
+      const savedRole = localStorage.getItem("userRole");
+      if (savedRole === "client" || savedRole === "freelancer") {
+        setRole(savedRole as Role);
+      } else {
+        setRole(null);
+      }
+    };
+
+    if (typeof window !== "undefined") {
+      window.addEventListener("roleChanged", handleRoleChange);
+      window.addEventListener("storage", handleRoleChange);
+    }
+
+    return () => {
+      if (typeof window !== "undefined") {
+        window.removeEventListener("roleChanged", handleRoleChange);
+        window.removeEventListener("storage", handleRoleChange);
+      }
+    };
+  }, []);
 
   const initializeRole = useCallback(() => {
     if (typeof window !== "undefined") {
@@ -28,11 +51,17 @@ export const useRole = () => {
     } else {
       localStorage.removeItem("userRole");
     }
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new Event("roleChanged"));
+    }
   }, []);
 
   const clearRole = useCallback(() => {
     setRole(null);
     localStorage.removeItem("userRole");
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new Event("roleChanged"));
+    }
   }, []);
 
   return {
@@ -42,3 +71,4 @@ export const useRole = () => {
     initializeRole,
   };
 };
+

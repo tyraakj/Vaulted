@@ -2,12 +2,92 @@ import { useState, useCallback } from "react";
 import { ethers } from "ethers";
 import type { Job, JobStatus } from "../types";
 import { BASE_SEPOLIA_RPC, MOCK_USD_ADDRESS, MOCK_USD_DECIMALS } from "../lib/constants";
-import { getContract } from "../lib/contract";
+import { getContract, VAULTED_CONTRACT_ABI } from "../lib/contract";
 
 const ERC20_ABI = [
   "function balanceOf(address account) view returns (uint256)",
   "function allowance(address owner, address spender) view returns (uint256)",
 ] as const;
+
+const isMockMode = import.meta.env.VITE_UGF_MOCK === "true";
+const escrowInterface = new ethers.Interface(VAULTED_CONTRACT_ABI);
+const erc20Interface = new ethers.Interface([
+  "function approve(address spender, uint256 amount) external returns (bool)"
+]);
+
+const initializeMockJobs = (): Job[] => {
+  const existing = localStorage.getItem("vaulted_mock_jobs");
+  if (existing) {
+    try {
+      return JSON.parse(existing);
+    } catch (e) {
+      // parse error, fallback
+    }
+  }
+
+  const defaultJobs: Job[] = [
+    {
+      id: "1",
+      title: "E-Commerce Frontend Integration",
+      description: "Integrate base payments page and responsive checkout flow for our new dApp storefront.",
+      client: "0xClientMock1234567890abcdef1234567890abc",
+      freelancer: "0x0000000000000000000000000000000000000000",
+      amount: 1500,
+      status: "Open",
+      createdAt: Date.now() - 3 * 86400 * 1000,
+      autoReleaseAt: Date.now() + 10 * 86400 * 1000,
+    },
+    {
+      id: "2",
+      title: "Smart Contract Audit",
+      description: "Review and audit our gasless escrow smart contracts for Base Sepolia launch.",
+      client: "0xClientMock1234567890abcdef1234567890abc",
+      freelancer: "0xFreelancerMock9876543210fedcba0987654",
+      amount: 3500,
+      status: "Active",
+      createdAt: Date.now() - 5 * 86400 * 1000,
+      autoReleaseAt: Date.now() + 5 * 86400 * 1000,
+    },
+    {
+      id: "3",
+      title: "Premium landing page with Glassmorphism design",
+      description: "Build a landing page featuring dark mode, glassmorphism card UI, and CSS animations.",
+      client: "0xClientMock1234567890abcdef1234567890abc",
+      freelancer: "0xFreelancerMock9876543210fedcba0987654",
+      amount: 800,
+      status: "Complete",
+      createdAt: Date.now() - 8 * 86400 * 1000,
+      autoReleaseAt: Date.now() + 2 * 86400 * 1000,
+    },
+    {
+      id: "4",
+      title: "AI Integration & Prompt Engineering",
+      description: "Integrate Gemini API and configure structured output for automated contract generation.",
+      client: "0xClientMock1234567890abcdef1234567890abc",
+      freelancer: "0xFreelancerMock9876543210fedcba0987654",
+      amount: 2500,
+      status: "Disputed",
+      createdAt: Date.now() - 12 * 86400 * 1000,
+      autoReleaseAt: Date.now() + 1 * 86400 * 1000,
+    }
+  ];
+
+  localStorage.setItem("vaulted_mock_jobs", JSON.stringify(defaultJobs));
+  
+  // Initialize mock deliverables for Job 3 if not present
+  if (!localStorage.getItem("deliverables_3")) {
+    localStorage.setItem(
+      "deliverables_3",
+      JSON.stringify({
+        description: "Built with beautiful CSS transitions and glassmorphism styling. Checked responsiveness across viewport widths.",
+        link: "https://github.com/TychiWallet/vaulted-demo",
+        submittedAt: Date.now() - 1 * 86400 * 1000,
+      })
+    );
+  }
+
+  return defaultJobs;
+};
 
 /**
  * LAYER 3 - LOGIC LAYER
@@ -33,7 +113,7 @@ export const useContract = () => {
     const freelancer = contractJob.freelancer !== undefined ? contractJob.freelancer : contractJob[4];
     
     const amountRaw = contractJob.amount !== undefined ? contractJob.amount : contractJob[5];
-    const amount = Number(ethers.formatEther(amountRaw));
+    const amount = Number(ethers.formatUnits(amountRaw, MOCK_USD_DECIMALS));
 
     const statusRaw = contractJob.status !== undefined ? contractJob.status : contractJob[6];
     const statusNum = Number(statusRaw);
@@ -68,11 +148,25 @@ export const useContract = () => {
   }, []);
 
   const getMockUsdBalance = useCallback(async (owner: string): Promise<bigint> => {
+    if (isMockMode) {
+      const balances = JSON.parse(localStorage.getItem("vaulted_mock_balances") || "{}");
+      const ownerLower = owner.toLowerCase();
+      if (balances[ownerLower] === undefined) {
+        balances[ownerLower] = ethers.parseUnits("100000", MOCK_USD_DECIMALS).toString();
+        localStorage.setItem("vaulted_mock_balances", JSON.stringify(balances));
+      }
+      return BigInt(balances[ownerLower]);
+    }
     const token = getMockUsdContract();
     return token.balanceOf(owner) as Promise<bigint>;
   }, [getMockUsdContract]);
 
   const getMockUsdAllowance = useCallback(async (owner: string, spender: string): Promise<bigint> => {
+    if (isMockMode) {
+      const allowances = JSON.parse(localStorage.getItem("vaulted_mock_allowances") || "{}");
+      const key = `${owner.toLowerCase()}-${spender.toLowerCase()}`;
+      return allowances[key] ? BigInt(allowances[key]) : 0n;
+    }
     const token = getMockUsdContract();
     return token.allowance(owner, spender) as Promise<bigint>;
   }, [getMockUsdContract]);
@@ -82,12 +176,17 @@ export const useContract = () => {
     setIsLoading(true);
     setError(null);
     try {
+      if (isMockMode) {
+        const jobs = initializeMockJobs();
+        const job = jobs.find((j) => j.id === jobId);
+        return job || null;
+      }
+
       const contract = getContract();
       if (!contract) {
         throw new Error("Contract not initialized");
       }
 
-      // Prefer high-level getter if available, otherwise fall back to public mapping `jobs`
       const anyContract = contract as any;
       let jobData: any;
 
@@ -119,6 +218,10 @@ export const useContract = () => {
     setIsLoading(true);
     setError(null);
     try {
+      if (isMockMode) {
+        return initializeMockJobs();
+      }
+
       const contract = getContract();
       if (!contract) {
         throw new Error("Contract not initialized");
@@ -126,14 +229,12 @@ export const useContract = () => {
 
       const anyContract = contract as any;
 
-      // If contract provides getAllJobs, use it
       if (typeof anyContract.getAllJobs === "function") {
         const jobsData = await anyContract.getAllJobs();
         if (!jobsData) return [];
         return jobsData.map((job: any) => mapContractJobToJob(job));
       }
 
-      // Otherwise, fall back to reading via public mapping `jobs` and `jobCount()`
       if (typeof anyContract.jobCount === "function" && typeof anyContract.jobs === "function") {
         const countRaw = await anyContract.jobCount();
         const count = Number(countRaw);
@@ -166,13 +267,8 @@ export const useContract = () => {
   const encodeCreateJob = useCallback(
     (title: string, description: string, amount: string): string => {
       try {
-        const contract = getContract();
-        if (!contract) {
-          throw new Error("Contract not initialized");
-        }
-
         const amountWei = ethers.parseUnits(amount, MOCK_USD_DECIMALS);
-        return contract.interface.encodeFunctionData("createJob", [
+        return escrowInterface.encodeFunctionData("createJob", [
           title,
           description,
           amountWei,
@@ -186,29 +282,22 @@ export const useContract = () => {
     [],
   );
 
-    // ENCODE: Approve Mock USD to spender (ERC-20 approve)
-    const encodeApprove = useCallback((spender: string, amount: string): string => {
-      try {
-        // ERC-20 approve ABI
-        const erc20Iface = new ethers.Interface(["function approve(address spender, uint256 amount) external returns (bool)"]);
-        const amountWei = ethers.parseUnits(amount, MOCK_USD_DECIMALS);
-        return erc20Iface.encodeFunctionData("approve", [spender, amountWei]);
-      } catch (err) {
-        const errorMsg = err instanceof Error ? err.message : "Encoding failed";
-        setError(errorMsg);
-        return "";
-      }
-    }, []);
+  // ENCODE: Approve Mock USD to spender (ERC-20 approve)
+  const encodeApprove = useCallback((spender: string, amount: string): string => {
+    try {
+      const amountWei = ethers.parseUnits(amount, MOCK_USD_DECIMALS);
+      return erc20Interface.encodeFunctionData("approve", [spender, amountWei]);
+    } catch (err) {
+      const errorMsg = err instanceof Error ? err.message : "Encoding failed";
+      setError(errorMsg);
+      return "";
+    }
+  }, []);
 
   // ENCODE: Accept job (returns calldata for UGF to execute)
   const encodeAcceptJob = useCallback((jobId: string): string => {
     try {
-      const contract = getContract();
-      if (!contract) {
-        throw new Error("Contract not initialized");
-      }
-
-      return contract.interface.encodeFunctionData("acceptJob", [BigInt(jobId)]);
+      return escrowInterface.encodeFunctionData("acceptJob", [BigInt(jobId)]);
     } catch (err) {
       const errorMsg = err instanceof Error ? err.message : "Encoding failed";
       setError(errorMsg);
@@ -220,25 +309,13 @@ export const useContract = () => {
   const encodeSubmitMilestone = useCallback(
     (jobId: string, workDetails?: string): string => {
       try {
-        const contract = getContract();
-        if (!contract) {
-          throw new Error("Contract not initialized");
-        }
-
-        // Encode against the available ABI signature. Some deployed contracts
-        // implement `submitMilestone(uint256 jobId, string workDetails)` while
-        // others may only accept `submitMilestone(uint256 jobId)`. Detect and
-        // encode accordingly to avoid guessing.
-        const iface = contract.interface as any;
         try {
-          // Try full signature first
-          iface.getFunction("submitMilestone(uint256,string)");
-          return iface.encodeFunctionData("submitMilestone", [BigInt(jobId), workDetails || ""]);
+          escrowInterface.getFunction("submitMilestone(uint256,string)");
+          return escrowInterface.encodeFunctionData("submitMilestone", [BigInt(jobId), workDetails || ""]);
         } catch (e) {
-          // Fallback to single-arg signature
           try {
-            iface.getFunction("submitMilestone(uint256)");
-            return iface.encodeFunctionData("submitMilestone", [BigInt(jobId)]);
+            escrowInterface.getFunction("submitMilestone(uint256)");
+            return escrowInterface.encodeFunctionData("submitMilestone", [BigInt(jobId)]);
           } catch (e2) {
             throw new Error("submitMilestone function not found in contract ABI");
           }
@@ -255,12 +332,7 @@ export const useContract = () => {
   // ENCODE: Release payment (returns calldata for UGF to execute)
   const encodeReleasePayment = useCallback((jobId: string): string => {
     try {
-      const contract = getContract();
-      if (!contract) {
-        throw new Error("Contract not initialized");
-      }
-
-      return contract.interface.encodeFunctionData("releasePayment", [BigInt(jobId)]);
+      return escrowInterface.encodeFunctionData("releasePayment", [BigInt(jobId)]);
     } catch (err) {
       const errorMsg = err instanceof Error ? err.message : "Encoding failed";
       setError(errorMsg);
@@ -271,12 +343,7 @@ export const useContract = () => {
   // ENCODE: Dispute job (returns calldata for UGF to execute)
   const encodeDisputeJob = useCallback((jobId: string): string => {
     try {
-      const contract = getContract();
-      if (!contract) {
-        throw new Error("Contract not initialized");
-      }
-
-      return contract.interface.encodeFunctionData("disputeJob", [BigInt(jobId)]);
+      return escrowInterface.encodeFunctionData("disputeJob", [BigInt(jobId)]);
     } catch (err) {
       const errorMsg = err instanceof Error ? err.message : "Encoding failed";
       setError(errorMsg);
@@ -287,15 +354,43 @@ export const useContract = () => {
   // ENCODE: Auto release (returns calldata for UGF to execute)
   const encodeAutoRelease = useCallback((jobId: string): string => {
     try {
-      const contract = getContract();
-      if (!contract) {
-        throw new Error("Contract not initialized");
-      }
-
-      return contract.interface.encodeFunctionData("autoRelease", [BigInt(jobId)]);
+      return escrowInterface.encodeFunctionData("autoRelease", [BigInt(jobId)]);
     } catch (err) {
       const errorMsg = err instanceof Error ? err.message : "Encoding failed";
       setError(errorMsg);
+      return "";
+    }
+  }, []);
+
+  // ENCODE: Resolve dispute (returns calldata for UGF to execute)
+  const encodeResolveDispute = useCallback(
+    (jobId: string, freelancerAmount: string): string => {
+      try {
+        const amountWei = ethers.parseUnits(freelancerAmount, MOCK_USD_DECIMALS);
+        return escrowInterface.encodeFunctionData("resolveDispute", [
+          BigInt(jobId),
+          amountWei,
+        ]);
+      } catch (err) {
+        const errorMsg = err instanceof Error ? err.message : "Encoding failed";
+        setError(errorMsg);
+        return "";
+      }
+    },
+    [],
+  );
+
+  // READ: Fetch contract owner address
+  const getContractOwner = useCallback(async (): Promise<string> => {
+    try {
+      if (isMockMode) {
+        return "0xClientMock1234567890abcdef1234567890abc";
+      }
+      const contract = getContract();
+      if (!contract) return "";
+      return await contract.owner();
+    } catch (err) {
+      console.error("Failed to fetch contract owner:", err);
       return "";
     }
   }, []);
@@ -312,7 +407,9 @@ export const useContract = () => {
     encodeReleasePayment,
     encodeDisputeJob,
     encodeAutoRelease,
+    encodeResolveDispute,
     getMockUsdBalance,
     getMockUsdAllowance,
+    getContractOwner,
   };
 };

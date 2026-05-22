@@ -17,6 +17,7 @@ import { JobDetail } from "./pages/JobDetail";
 import { Terms } from "./components/Terms";
 import { Privacy } from "./components/Privacy";
 import { Contact } from "./components/Contact";
+import { ProtectedRoute } from "./components/ProtectedRoute";
 
 export const App: React.FC = () => {
   const { address, isConnected, isCorrectNetwork, connect, disconnect } =
@@ -41,10 +42,31 @@ export const App: React.FC = () => {
         <main className="app-main">
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/post-job" element={<PostJob />} />
+            <Route
+              path="/post-job"
+              element={
+                <ProtectedRoute
+                  isConnected={isConnected}
+                  isCorrectNetwork={isCorrectNetwork}
+                  requiredRole="client"
+                >
+                  <PostJob />
+                </ProtectedRoute>
+              }
+            />
             <Route path="/browse" element={<BrowseJobs />} />
             <Route path="/job/:jobId" element={<JobDetail />} />
-            <Route path="/dashboard" element={<Dashboard />} />
+            <Route
+              path="/dashboard"
+              element={
+                <ProtectedRoute
+                  isConnected={isConnected}
+                  isCorrectNetwork={isCorrectNetwork}
+                >
+                  <Dashboard />
+                </ProtectedRoute>
+              }
+            />
             <Route path="/terms" element={<Terms />} />
             <Route path="/privacy" element={<Privacy />} />
             <Route path="/contact" element={<Contact />} />

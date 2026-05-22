@@ -2274,3 +2274,34 @@ select option {
   color: var(--t2);
   line-height: 1.75;
 }
+
+/* Compact role buttons in navbar */
+.nav-role-button {
+  background: var(--bg-ch);
+  border: 1px solid var(--b1);
+  border-radius: var(--radius);
+  padding: 4px 10px;
+  cursor: pointer;
+  transition: all var(--tr);
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--t2);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: auto;
+  line-height: 1;
+}
+.nav-role-button:hover {
+  border-color: var(--em-b);
+  background: var(--bg-o);
+  color: var(--t1);
+}
+.nav-role-button.active {
+  border-color: var(--em-b);
+  background: var(--em-d);
+  color: var(--em);
+  box-shadow: 0 0 8px var(--em-d);
+}

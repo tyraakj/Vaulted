@@ -3,8 +3,9 @@ pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
-contract Escrow is Ownable {
+contract Escrow is Ownable, ReentrancyGuard {
     IERC20 public mockUSD;
 
     enum JobStatus { Open, Active, Complete, Released, Disputed }
@@ -35,7 +36,11 @@ contract Escrow is Ownable {
         mockUSD = IERC20(_mockUSD);
     }
 
-    function createJob(string memory title, string memory description, uint256 amount) external {
+    function createJob(
+        string memory title,
+        string memory description,
+        uint256 amount
+    ) external {
         require(amount > 0, "Amount must be > 0");
         require(mockUSD.transferFrom(msg.sender, address(this), amount), "transferFrom failed");
 
@@ -51,7 +56,7 @@ contract Escrow is Ownable {
             amount: amount,
             status: JobStatus.Open,
             createdAt: block.timestamp,
-            autoReleaseAt: block.timestamp + 604800
+            autoReleaseAt: block.timestamp + 7 days
         });
 
         emit JobCreated(jobId, msg.sender, amount);
@@ -74,11 +79,12 @@ contract Escrow is Ownable {
         require(msg.sender == j.freelancer, "Only freelancer can submit");
 
         j.status = JobStatus.Complete;
+        j.autoReleaseAt = block.timestamp + 604800; // Reset to 7 days from completion
 
         emit MilestoneSubmitted(jobId);
     }
 
-    function releasePayment(uint256 jobId) external {
+    function releasePayment(uint256 jobId) external nonReentrant {
         Job storage j = jobs[jobId];
         require(j.status == JobStatus.Complete, "Job not complete");
         require(msg.sender == j.client, "Only client can release payment");
@@ -96,12 +102,33 @@ contract Escrow is Ownable {
         emit JobDisputed(jobId, msg.sender);
     }
 
-    function autoRelease(uint256 jobId) external {
+    function autoRelease(uint256 jobId) external nonReentrant {
         Job storage j = jobs[jobId];
         require(block.timestamp > j.autoReleaseAt, "Auto-release time not reached");
         require(j.status == JobStatus.Complete, "Job not complete");
 
         _releasePayment(jobId);
+    }
+
+    function resolveDispute(uint256 jobId, uint256 freelancerAmount) external onlyOwner nonReentrant {
+        Job storage j = jobs[jobId];
+        require(j.status == JobStatus.Disputed, "Job not disputed");
+        require(freelancerAmount <= j.amount, "Exceeds locked amount");
+
+        uint256 clientAmount = j.amount - freelancerAmount;
+        address freelancer = j.freelancer;
+        address client = j.client;
+
+        j.status = JobStatus.Released;
+
+        if (freelancerAmount > 0) {
+            require(mockUSD.transfer(freelancer, freelancerAmount), "Freelancer transfer failed");
+        }
+        if (clientAmount > 0) {
+            require(mockUSD.transfer(client, clientAmount), "Client refund failed");
+        }
+
+        emit PaymentReleased(jobId, freelancer, freelancerAmount);
     }
 
     function _releasePayment(uint256 jobId) internal {
