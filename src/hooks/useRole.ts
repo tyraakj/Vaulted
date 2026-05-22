@@ -2,12 +2,22 @@ import { useState, useCallback } from "react";
 import type { Role } from "../types";
 
 export const useRole = () => {
-  const [role, setRole] = useState<Role>(null);
+  const [role, setRole] = useState<Role>(() => {
+    if (typeof window !== "undefined") {
+      const savedRole = localStorage.getItem("userRole");
+      if (savedRole === "client" || savedRole === "freelancer") {
+        return savedRole as Role;
+      }
+    }
+    return null;
+  });
 
   const saveRole = useCallback((newRole: Role) => {
     setRole(newRole);
     if (newRole) {
       localStorage.setItem("userRole", newRole);
+    } else {
+      localStorage.removeItem("userRole");
     }
   }, []);
 
@@ -17,9 +27,11 @@ export const useRole = () => {
   }, []);
 
   const initializeRole = useCallback(() => {
-    const savedRole = localStorage.getItem("userRole") as Role;
-    if (savedRole === "client" || savedRole === "freelancer") {
-      setRole(savedRole);
+    if (typeof window !== "undefined") {
+      const savedRole = localStorage.getItem("userRole");
+      if (savedRole === "client" || savedRole === "freelancer") {
+        setRole(savedRole as Role);
+      }
     }
   }, []);
 

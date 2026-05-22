@@ -8,8 +8,14 @@ import { CONTRACT_ADDRESS, BASE_SEPOLIA_RPC } from "./constants";
 
 // TODO: Add full smart contract ABI from Remix deployment
 export const VAULTED_CONTRACT_ABI = [
-  // Placeholder for contract ABI
-  // Copy from Remix after deployment
+  "function createJob(string title, string description, uint256 amount) external",
+  "function acceptJob(uint256 jobId) external",
+  "function submitMilestone(uint256 jobId, string workDetails) external",
+  "function releasePayment(uint256 jobId) external",
+  "function disputeJob(uint256 jobId) external",
+  "function autoRelease(uint256 jobId) external",
+  "function getJob(uint256 jobId) external view returns (tuple(uint256 id, string title, string description, address client, address freelancer, uint256 amount, uint8 status, uint256 createdAt, uint256 autoReleaseAt))",
+  "function getAllJobs() external view returns (tuple(uint256 id, string title, string description, address client, address freelancer, uint256 amount, uint8 status, uint256 createdAt, uint256 autoReleaseAt)[])"
 ];
 
 // Singleton contract instance
@@ -20,7 +26,7 @@ let contractInstance: ethers.Contract | null = null;
  * Uses Ethers.js for reading data
  * Never submits transactions directly (UGF handles that)
  */
-export const getContract = async (): Promise<ethers.Contract | null> => {
+export const getContract = (): ethers.Contract | null => {
   if (contractInstance) {
     return contractInstance;
   }
