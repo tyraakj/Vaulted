@@ -2,22 +2,25 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { JobCard } from "../components/JobCard";
 import { Job } from "../types";
+import { useContract } from "../hooks/useContract";
+import { useWallet } from "../hooks/useWallet";
 
 export const BrowseJobs: React.FC = () => {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(false);
   const [filter, setFilter] = useState("All");
+  const { getAllJobs } = useContract();
+  const { isConnected, connect } = useWallet();
 
   useEffect(() => {
-    fetchJobs();
-  }, []);
+    if (isConnected) fetchJobs();
+  }, [isConnected]);
 
   const fetchJobs = async () => {
     setLoading(true);
     try {
-      // TODO: Fetch escrow contracts from protocol
-      console.log("Fetching escrow market feed...");
-      setJobs([]);
+      const all = await getAllJobs();
+      setJobs(all || []);
     } catch (error) {
       console.error("Failed to fetch contracts:", error);
     } finally {
@@ -57,6 +60,11 @@ export const BrowseJobs: React.FC = () => {
         <div className="loading-state">
           <div className="processing-spinner" />
           LOADING_CONTRACTS...
+        </div>
+      ) : !isConnected ? (
+        <div>
+          <p>Please connect your wallet to view on-chain contracts.</p>
+          <button className="btn btn-primary" onClick={() => connect()}>Connect Wallet</button>
         </div>
       ) : (
         <div className="jobs-grid">

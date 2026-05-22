@@ -1,7 +1,13 @@
 import { useState, useCallback } from "react";
 import { ethers } from "ethers";
 import type { Job, JobStatus } from "../types";
+import { BASE_SEPOLIA_RPC, MOCK_USD_ADDRESS, MOCK_USD_DECIMALS } from "../lib/constants";
 import { getContract } from "../lib/contract";
+
+const ERC20_ABI = [
+  "function balanceOf(address account) view returns (uint256)",
+  "function allowance(address owner, address spender) view returns (uint256)",
+] as const;
 
 /**
  * LAYER 3 - LOGIC LAYER
@@ -51,6 +57,25 @@ export const useContract = () => {
       autoReleaseAt,
     };
   }, []);
+
+  const getMockUsdContract = useCallback(() => {
+    if (!MOCK_USD_ADDRESS) {
+      throw new Error("Mock USD address not configured");
+    }
+
+    const provider = new ethers.JsonRpcProvider(BASE_SEPOLIA_RPC);
+    return new ethers.Contract(MOCK_USD_ADDRESS, ERC20_ABI, provider);
+  }, []);
+
+  const getMockUsdBalance = useCallback(async (owner: string): Promise<bigint> => {
+    const token = getMockUsdContract();
+    return token.balanceOf(owner) as Promise<bigint>;
+  }, [getMockUsdContract]);
+
+  const getMockUsdAllowance = useCallback(async (owner: string, spender: string): Promise<bigint> => {
+    const token = getMockUsdContract();
+    return token.allowance(owner, spender) as Promise<bigint>;
+  }, [getMockUsdContract]);
 
   // READ: Fetch a single job by ID
   const getJob = useCallback(async (jobId: string): Promise<Job | null> => {
@@ -146,8 +171,7 @@ export const useContract = () => {
           throw new Error("Contract not initialized");
         }
 
-        // Amount parsed to 18 decimal places (wei format) for standard Mock USD ERC-20 integration
-        const amountWei = ethers.parseEther(amount);
+        const amountWei = ethers.parseUnits(amount, MOCK_USD_DECIMALS);
         return contract.interface.encodeFunctionData("createJob", [
           title,
           description,
@@ -167,7 +191,7 @@ export const useContract = () => {
       try {
         // ERC-20 approve ABI
         const erc20Iface = new ethers.Interface(["function approve(address spender, uint256 amount) external returns (bool)"]);
-        const amountWei = ethers.parseEther(amount);
+        const amountWei = ethers.parseUnits(amount, MOCK_USD_DECIMALS);
         return erc20Iface.encodeFunctionData("approve", [spender, amountWei]);
       } catch (err) {
         const errorMsg = err instanceof Error ? err.message : "Encoding failed";
@@ -288,5 +312,7 @@ export const useContract = () => {
     encodeReleasePayment,
     encodeDisputeJob,
     encodeAutoRelease,
+    getMockUsdBalance,
+    getMockUsdAllowance,
   };
 };

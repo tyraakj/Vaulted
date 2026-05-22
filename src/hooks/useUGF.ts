@@ -64,6 +64,7 @@ export const useUGF = () => {
     async (
       address: string,
       calldata: string,
+      targetAddress: string = CONTRACT_ADDRESS,
     ): Promise<{ success: boolean; data: QuoteResponse | null; error: string | null }> => {
       updateStep("quote", true);
       try {
@@ -71,7 +72,7 @@ export const useUGF = () => {
           payer_address: address,
           tx_object: JSON.stringify({
             from: address,
-            to: CONTRACT_ADDRESS,
+            to: targetAddress,
             data: calldata,
             value: "0",
           }),
@@ -119,6 +120,7 @@ export const useUGF = () => {
     async (
       quoteResponse: QuoteResponse,
       calldata: string,
+      targetAddress: string = CONTRACT_ADDRESS,
     ): Promise<{ success: boolean; txHash: string | null; error: string | null }> => {
       updateStep("execute", true);
       try {
@@ -127,7 +129,7 @@ export const useUGF = () => {
           quoteResponse.digest,
           signer,
           async () => ({
-            to: CONTRACT_ADDRESS,
+            to: targetAddress,
             data: calldata,
             value: 0n,
           }),
@@ -148,6 +150,7 @@ export const useUGF = () => {
     async (
       address: string,
       calldata: string,
+      targetAddress: string = CONTRACT_ADDRESS,
     ): Promise<{ success: boolean; txHash?: string; error?: string }> => {
       if (!isUGFConfigured()) {
         return { success: false, error: "UGF endpoint not configured" };
@@ -166,7 +169,7 @@ export const useUGF = () => {
           payer_address: address,
           tx_object: JSON.stringify({
             from: address,
-            to: CONTRACT_ADDRESS,
+            to: targetAddress,
             data: calldata,
             value: "0",
           }),
@@ -184,7 +187,7 @@ export const useUGF = () => {
           quote.digest,
           signer,
           async () => ({
-            to: CONTRACT_ADDRESS,
+            to: targetAddress,
             data: calldata,
             value: 0n,
           }),

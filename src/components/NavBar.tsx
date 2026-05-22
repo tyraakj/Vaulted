@@ -20,6 +20,7 @@ export const NavBar: React.FC<NavBarProps> = ({
   onDisconnect,
   address,
   userRole,
+  onRoleChange,
 }) => {
   const location = useLocation();
   const navRef = useRef<HTMLElement>(null);
@@ -104,6 +105,27 @@ export const NavBar: React.FC<NavBarProps> = ({
         {/* Right — network badge + wallet */}
         <div className="navbar-right">
           <div className="network-badge">BASE_SEPOLIA</div>
+          <div style={{ marginRight: 12, display: "flex", gap: 8, alignItems: "center" }}>
+            <button
+              className={`role-button ${userRole === "client" ? "active" : ""}`}
+              onClick={() => onRoleChange && onRoleChange("client")}
+              type="button"
+              aria-pressed={userRole === "client"}
+              title="Switch to client role"
+            >
+              <span style={{ fontSize: 12, opacity: 0.9 }}>Client</span>
+            </button>
+
+            <button
+              className={`role-button ${userRole === "freelancer" ? "active" : ""}`}
+              onClick={() => onRoleChange && onRoleChange("freelancer")}
+              type="button"
+              aria-pressed={userRole === "freelancer"}
+              title="Switch to freelancer role"
+            >
+              <span style={{ fontSize: 12, opacity: 0.9 }}>Freelancer</span>
+            </button>
+          </div>
           {isConnected && shortAddr ? (
             <div className="wallet-pill-connected">
               <span className="wallet-pill-addr">{shortAddr}</span>

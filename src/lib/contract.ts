@@ -98,8 +98,12 @@ export const getContract = (): ethers.Contract | null => {
       console.error("Contract address not configured in .env");
       return null;
     }
-
-    const provider = new ethers.JsonRpcProvider(BASE_SEPOLIA_RPC);
+    let provider;
+    if (typeof window !== "undefined" && (window as any).ethereum) {
+      provider = new ethers.BrowserProvider((window as any).ethereum as any);
+    } else {
+      provider = new ethers.JsonRpcProvider(BASE_SEPOLIA_RPC);
+    }
     contractInstance = new ethers.Contract(
       CONTRACT_ADDRESS,
       VAULTED_CONTRACT_ABI,

@@ -14,6 +14,7 @@ export const BASE_SEPOLIA_EXPLORER = "https://sepolia.basescan.org";
 // Environment-based Configuration
 export const CONTRACT_ADDRESS = import.meta.env.VITE_CONTRACT_ADDRESS || "";
 export const MOCK_USD_ADDRESS = import.meta.env.VITE_MOCK_USD_ADDRESS || "";
+export const MOCK_USD_DECIMALS = 6;
 export const UGF_ENDPOINT = import.meta.env.VITE_UGF_ENDPOINT || "";
 export const AUTO_RELEASE_DAYS = 7;
 

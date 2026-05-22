@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.20;
 
-import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v4.9.3/contracts/token/ERC20/IERC20.sol";
-import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v4.9.3/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract Escrow is Ownable {
     IERC20 public mockUSD;
@@ -30,15 +30,13 @@ contract Escrow is Ownable {
     event PaymentReleased(uint256 indexed jobId, address indexed freelancer, uint256 amount);
     event JobDisputed(uint256 indexed jobId, address indexed by);
 
-    constructor(address _mockUSD) {
+    constructor(address _mockUSD) Ownable(msg.sender) {
         require(_mockUSD != address(0), "mockUSD address zero");
         mockUSD = IERC20(_mockUSD);
     }
 
     function createJob(string memory title, string memory description, uint256 amount) external {
         require(amount > 0, "Amount must be > 0");
-
-        // Transfer Mock USD into this contract. Caller must have approved first.
         require(mockUSD.transferFrom(msg.sender, address(this), amount), "transferFrom failed");
 
         jobCount += 1;
@@ -106,11 +104,9 @@ contract Escrow is Ownable {
         _releasePayment(jobId);
     }
 
-    // Internal helper to centralize transfer logic.
     function _releasePayment(uint256 jobId) internal {
         Job storage j = jobs[jobId];
 
-        // Transfer funds to freelancer
         address freelancer = j.freelancer;
         uint256 amount = j.amount;
 
