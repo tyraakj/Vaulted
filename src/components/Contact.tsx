@@ -45,23 +45,6 @@ export const Contact: React.FC = () => {
           </div>
 
           <div className="contact-card">
-            <div className="contact-icon">📋</div>
-            <h3>Bug Reports</h3>
-            <p>
-              Spotted something unexpected in the UI or contract behavior? Open
-              an issue on GitHub with steps to reproduce.
-            </p>
-            <a
-              href="https://github.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="contact-link"
-            >
-              Open GitHub →
-            </a>
-          </div>
-
-          <div className="contact-card">
             <div className="contact-icon">⚡</div>
             <h3>Gasless Transaction Help</h3>
             <p>
