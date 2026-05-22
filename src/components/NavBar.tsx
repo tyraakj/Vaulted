@@ -60,7 +60,7 @@ export const NavBar: React.FC<NavBarProps> = ({
       <div className="navbar-container">
         {/* Logo */}
         <Link to="/" className="navbar-logo">
-          VAULTED_OS
+          VAULTED
         </Link>
 
         {/* Centre nav links */}
