@@ -8,15 +8,77 @@ import { CONTRACT_ADDRESS, BASE_SEPOLIA_RPC } from "./constants";
 
 // TODO: Add full smart contract ABI from Remix deployment
 export const VAULTED_CONTRACT_ABI = [
-  "function createJob(string title, string description, uint256 amount) external",
-  "function acceptJob(uint256 jobId) external",
-  "function submitMilestone(uint256 jobId, string workDetails) external",
-  "function releasePayment(uint256 jobId) external",
-  "function disputeJob(uint256 jobId) external",
-  "function autoRelease(uint256 jobId) external",
-  "function getJob(uint256 jobId) external view returns (tuple(uint256 id, string title, string description, address client, address freelancer, uint256 amount, uint8 status, uint256 createdAt, uint256 autoReleaseAt))",
-  "function getAllJobs() external view returns (tuple(uint256 id, string title, string description, address client, address freelancer, uint256 amount, uint8 status, uint256 createdAt, uint256 autoReleaseAt)[])"
-];
+  {
+    "inputs": [{ "internalType": "uint256", "name": "jobId", "type": "uint256" }],
+    "name": "acceptJob", "outputs": [], "stateMutability": "nonpayable", "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "uint256", "name": "jobId", "type": "uint256" }],
+    "name": "autoRelease", "outputs": [], "stateMutability": "nonpayable", "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "string", "name": "title", "type": "string" },
+      { "internalType": "string", "name": "description", "type": "string" },
+      { "internalType": "uint256", "name": "amount", "type": "uint256" }
+    ],
+    "name": "createJob", "outputs": [], "stateMutability": "nonpayable", "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "uint256", "name": "jobId", "type": "uint256" }],
+    "name": "disputeJob", "outputs": [], "stateMutability": "nonpayable", "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "uint256", "name": "jobId", "type": "uint256" }],
+    "name": "releasePayment", "outputs": [], "stateMutability": "nonpayable", "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "renounceOwnership", "outputs": [], "stateMutability": "nonpayable", "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "uint256", "name": "jobId", "type": "uint256" }],
+    "name": "submitMilestone", "outputs": [], "stateMutability": "nonpayable", "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "address", "name": "newOwner", "type": "address" }],
+    "name": "transferOwnership", "outputs": [], "stateMutability": "nonpayable", "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "jobCount",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view", "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "name": "jobs",
+    "outputs": [
+      { "internalType": "uint256", "name": "id", "type": "uint256" },
+      { "internalType": "string", "name": "title", "type": "string" },
+      { "internalType": "string", "name": "description", "type": "string" },
+      { "internalType": "address", "name": "client", "type": "address" },
+      { "internalType": "address", "name": "freelancer", "type": "address" },
+      { "internalType": "uint256", "name": "amount", "type": "uint256" },
+      { "internalType": "enum Escrow.JobStatus", "name": "status", "type": "uint8" },
+      { "internalType": "uint256", "name": "createdAt", "type": "uint256" },
+      { "internalType": "uint256", "name": "autoReleaseAt", "type": "uint256" }
+    ],
+    "stateMutability": "view", "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "mockUSD",
+    "outputs": [{ "internalType": "contract IERC20", "name": "", "type": "address" }],
+    "stateMutability": "view", "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "owner",
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "stateMutability": "view", "type": "function"
+  }
+] as const;
 
 // Singleton contract instance
 let contractInstance: ethers.Contract | null = null;
