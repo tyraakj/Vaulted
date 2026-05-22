@@ -1,15 +1,10 @@
 import { useState, useCallback } from "react";
 import { ethers } from "ethers";
-import type { QuoteResponse } from "@tychilabs/ugf-sdk";
+import type { QuoteResponse } from "@tychilabs/ugf-testnet-js";
 import type { UGFStep, UGFFlowState } from "../types";
 import { CONTRACT_ADDRESS } from "../lib/constants";
 import ugfClient, { isUGFConfigured } from "../lib/ugf";
 
-/**
- * LAYER 8 - UGF TRANSACTION LAYER
- * 4-step flow: login -> quote -> settle -> execute
- * Every on-chain action runs through this sequence
- */
 export const useUGF = () => {
   const [flowState, setFlowState] = useState<UGFFlowState>({
     step: "login",
@@ -73,18 +68,13 @@ export const useUGF = () => {
       updateStep("quote", true);
       try {
         const response = await ugfClient.quote.get({
-          payment_coin: "USDC",
           payer_address: address,
-          payment_chain: "84532",
-          payment_chain_type: "evm",
           tx_object: JSON.stringify({
             from: address,
             to: CONTRACT_ADDRESS,
             data: calldata,
             value: "0",
           }),
-          dest_chain_id: "84532",
-          dest_chain_type: "evm",
         });
 
         updateStep("quote", false, null);
@@ -105,39 +95,17 @@ export const useUGF = () => {
       updateStep("settle", true);
       try {
         const signer = await getSigner();
+        const paymentResponse = await ugfClient.payment.x402.execute({
+          quote: quoteResponse,
+          signer,
+        });
 
-        if (quoteResponse.payment_mode === "x402") {
-          const paymentResponse = await ugfClient.payment.x402.execute({
-            quote: quoteResponse,
-            signer,
-            token: "USDC",
-          });
-
-          updateStep("settle", false, null);
-          return {
-            success: true,
-            signature: paymentResponse.status,
-            error: null,
-          };
-        }
-
-        if (quoteResponse.payment_mode === "vault") {
-          const paymentResponse = await ugfClient.payment.vault.payAndSubmit(
-            quoteResponse,
-            signer,
-            "84532",
-            "USDC",
-          );
-
-          updateStep("settle", false, null);
-          return {
-            success: true,
-            signature: paymentResponse.status,
-            error: null,
-          };
-        }
-
-        throw new Error(`Unsupported payment mode: ${quoteResponse.payment_mode}`);
+        updateStep("settle", false, null);
+        return {
+          success: true,
+          signature: paymentResponse.status,
+          error: null,
+        };
       } catch (err) {
         const errorMsg = err instanceof Error ? err.message : "Settlement failed";
         updateStep("settle", false, errorMsg);
@@ -155,20 +123,18 @@ export const useUGF = () => {
       updateStep("execute", true);
       try {
         const signer = await getSigner();
-        const result = await ugfClient.chains.evm.sponsorAndExecute(
+        const { userTxHash } = await ugfClient.chains.evm.sponsorAndExecute(
           quoteResponse.digest,
           signer,
-          async (s) => {
-            return s.sendTransaction({
-              to: CONTRACT_ADDRESS,
-              data: calldata,
-            });
-          },
-          {},
+          async () => ({
+            to: CONTRACT_ADDRESS,
+            data: calldata,
+            value: 0n,
+          }),
         );
 
-        updateStep("execute", false, null, result.userTxHash);
-        return { success: true, txHash: result.userTxHash, error: null };
+        updateStep("execute", false, null, userTxHash);
+        return { success: true, txHash: userTxHash, error: null };
       } catch (err) {
         const errorMsg = err instanceof Error ? err.message : "Execution failed";
         updateStep("execute", false, errorMsg);
@@ -184,48 +150,62 @@ export const useUGF = () => {
       calldata: string,
     ): Promise<{ success: boolean; txHash?: string; error?: string }> => {
       if (!isUGFConfigured()) {
-        console.error("UGF endpoint not configured. Aborting runFlow.");
         return { success: false, error: "UGF endpoint not configured" };
       }
 
-      const loginRes = await login(address);
-      if (!loginRes.success) {
-        return { success: false, error: loginRes.error || "Login failed" };
-      }
+      try {
+        // Step 1: Login
+        updateStep("login", true);
+        const signer = await getSigner();
+        await ugfClient.auth.login(signer);
+        updateStep("login", false);
 
-      const quoteRes = await quote(address, calldata);
-      if (!quoteRes.success || !quoteRes.data) {
-        return { success: false, error: quoteRes.error || "Quote failed" };
-      }
+        // Step 2: Quote
+        updateStep("quote", true);
+        const quote = await ugfClient.quote.get({
+          payer_address: address,
+          tx_object: JSON.stringify({
+            from: address,
+            to: CONTRACT_ADDRESS,
+            data: calldata,
+            value: "0",
+          }),
+        });
+        updateStep("quote", false);
 
-      const settleRes = await settle(quoteRes.data);
-      if (!settleRes.success || !settleRes.signature) {
-        return { success: false, error: settleRes.error || "Settlement failed" };
-      }
+        // Step 3: Settle
+        updateStep("settle", true);
+        await ugfClient.payment.x402.execute({ quote, signer });
+        updateStep("settle", false);
 
-      const executeRes = await execute(quoteRes.data, calldata);
-      if (!executeRes.success || !executeRes.txHash) {
-        return { success: false, error: executeRes.error || "Execution failed" };
-      }
+        // Step 4: Execute
+        updateStep("execute", true);
+        const { userTxHash } = await ugfClient.chains.evm.sponsorAndExecute(
+          quote.digest,
+          signer,
+          async () => ({
+            to: CONTRACT_ADDRESS,
+            data: calldata,
+            value: 0n,
+          }),
+        );
+        updateStep("execute", false, null, userTxHash);
 
-      setFlowState({
-        step: "done",
-        isLoading: false,
-        error: null,
-        txHash: executeRes.txHash,
-      });
-      return { success: true, txHash: executeRes.txHash };
+        setFlowState({
+          step: "done",
+          isLoading: false,
+          error: null,
+          txHash: userTxHash,
+        });
+        return { success: true, txHash: userTxHash };
+      } catch (err) {
+        const errorMsg = err instanceof Error ? err.message : "Transaction failed";
+        setFlowState((prev) => ({ ...prev, isLoading: false, error: errorMsg }));
+        return { success: false, error: errorMsg };
+      }
     },
-    [login, quote, settle, execute],
+    [getSigner, updateStep],
   );
 
-  return {
-    flowState,
-    login,
-    quote,
-    settle,
-    execute,
-    runFlow,
-    updateStep,
-  };
+  return { flowState, runFlow, updateStep, login, quote, settle, execute };
 };
